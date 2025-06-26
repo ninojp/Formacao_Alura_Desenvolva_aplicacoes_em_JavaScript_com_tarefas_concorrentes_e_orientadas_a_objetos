@@ -19,13 +19,34 @@
 // delete listaDeItens.item1; // Deletando um item do objeto
 // console.log(listaDeItens); // Verificando se o item foi deletado
 //======================================================================================================
-
 let listaDeItens = [];
 let itemASerEditado;
 const form = document.getElementById('form-itens');
 const itensInput = document.getElementById('receber-item');
 const ulItens = document.getElementById("lista-de-itens");
 const ulItensComprados = document.getElementById("itens-comprados");
+const listaDeItensLocalStorage = localStorage.getItem('listaDeItens');
+//=====================================================================
+function atualizaLocalStorage() {
+    localStorage.setItem('listaDeItens', JSON.stringify(listaDeItens));
+};
+if(listaDeItensLocalStorage) {
+    listaDeItens = JSON.parse(listaDeItensLocalStorage);
+    mostrarItem();
+}else{
+    listaDeItens = [];
+};
+//--------------------------------------------------------------------
+function atualizaCookie() {
+    document.cookie = "listaDeItens=" + encodeURIComponent(JSON.stringify(listaDeItens)) + "; path=/; max-age=6000";
+};
+// path=/ faz o cookie valer para todo o site e max-age=31536000 define validade de 1 ano (em segundos).
+// O uso de encodeURIComponent() é necessário apenas para cookies, pois cookies têm restrições de caracteres e precisam ser codificados para evitar problemas com caracteres especiais.
+function lerCookie(nome) {
+    const valor = document.cookie.split('; ').find(row => row.startsWith(nome + '='));
+    return valor ? JSON.parse(decodeURIComponent(valor.split('=')[1])) : null;
+};
+console.log('Dados Vindos do Cookie: ', lerCookie('listaDeItens'));
 //=====================================================================
 form.addEventListener('submit', (evento) => {
     evento.preventDefault();
@@ -105,6 +126,9 @@ function mostrarItem() {
             mostrarItem();
         });
     });
+    //---------------------------------------------------------------------------------------------------
+    atualizaLocalStorage();
+    atualizaCookie();
 };
 //=======================================================================================================
 function salvarEdicao() {

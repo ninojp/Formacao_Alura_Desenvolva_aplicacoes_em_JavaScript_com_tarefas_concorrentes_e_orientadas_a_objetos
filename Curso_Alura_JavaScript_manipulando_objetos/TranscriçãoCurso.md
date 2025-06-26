@@ -1,4 +1,4 @@
-# JavaScript: manipulando objetos
+# Curso Alura - JavaScript: manipulando objetos
 
 ## Aula 01 - Iniciando o Projeto
 
@@ -1865,5 +1865,357 @@ Esse é um problema que precisamos resolver: manter os elementos de forma consis
 - Utilizou de métodos do JavaScript que possibilitam remover, editar, adicionar e substituir elementos de um array, contextualizando - com objetos;
 - Aprendeu métodos para comparar e modificar valores.
 
-### Aula 03 -  - Vídeo 7
-### Aula 03 -  - Vídeo 8
+## Aula 04 - GetItem e SetItem
+
+### Aula 04 - Projeto da aula anterior
+
+Aqui você pode [baixar o arquivo zip](https://github.com/alura-cursos/lista-de-compras/archive/refs/heads/aula3.zip) da aula 03 ou acessar os [arquivos no Github](https://github.com/alura-cursos/lista-de-compras/tree/aula3).
+
+### Aula 04 - SetItem - Vídeo 1
+
+Transcrição  
+Boas-vindas a quarta aula do curso de objetos no Javascript!
+
+Neste vídeo, precisamos iniciar a resolução de um problema importante em nossa aplicação. Note, por exemplo, que temos 4 itens em nossa lista de compras: manga, chocolate, arroz e maçã. Mas, ao pressionarmos F5 e atualizarmos a página, perdemos esses elementos, que não aparecem mais na listagem. O que precisamos, portanto, é criar um método para manter nossos objetos na página.
+
+Existem diversas maneiras de resolver esse problema. Poderíamos, por exemplo, conectar o projeto ao banco de dados ou utilizar um armazenador de dados do navegador. Entre os armazenadores existentes, podemos citar, por exemplo, o Local Storage, Session Storage ou Cookies.
+
+O Local Storage é ideal para guardar dados comuns, ou seja, que não são considerados sensíveis, como CPF ou dados de cartão de crédito. Nele, podemos armazenar itens de uma lista de compras, um tipo de dado que não precisa ser privado.
+
+Vamos abrir nossa ferramenta de desenvolvedor e a caixa do aplicativo para aprendermos a conectar o projeto ao banco de dados. Para isso, clique com o botão direito do mouse Inspecionar > >> > Aplicativo.
+
+Note que temos a opção "Armazenamento local", que corresponde, em português, a Local Storage. Logo abaixo, há um endereço iniciado por "http://" acompanhado por uma sequência numérica que corresponde à mesma sequência do nosso projeto. Clicando neste endereço, temos acesso ao que está guardado no Local Storage da nossa página, mas observe que a caixinha à direita está vazia, pois ainda não criamos um método que envie os dados para este armazenamento.
+
+Precisamos criar um método que envie os dados (objetos) para o Local Storage. No entanto, ele só recebe dados do tipo string (texto), então teremos que tratá-los, o que pode ser feito através de uma função, com poucas linhas de código.
+
+Em nosso projeto, criaremos a função na linha 9, abaixo de const ulItensComprados. Será uma function declaration e se chamará atualizaLocalStorage().
+
+No vídeo, o instrutor escreve autalizaLocalStorageo() com um erro de digitação que será corrigido por ele futuramente. Na transcrição, aparecerá apenas com a grafia correta: atualizaLocalStorage().
+
+Dentro da função, chamamremos localStorage.setItem() passando como parâmetro 'listaDeItens' e JSON.stringfy(). Este último, por sua vez, também recebe um parâmetro, no caso, listaDeItens.
+
+```JavaScript
+function atualizaLocalStorage() {
+    localStorage.setItem('listaDeItens', JSON.stringify(listaDeItens))
+}
+```
+
+Basicamente, utilizamos o método .stringfy(), do Javascript, para transformar os dados de listaDeItens em dados do tipo texto (string). Estes dados são enviando para JSON, um arquivo que guarda dados do tipo string - mesmo formato que o Local Storage aceita receber. Em seguida, o método .setItem() passa para o localStorage os dados transformados em string, ou seja, a 'listaDeItens' - que precisa ser passada entre aspas simples.
+
+Disponibilizamos um conteúdo extra que se aprofunda em JSON. Você pode consultá-lo caso tenha alguma dúvida.
+
+Criamos nossa função, mas ela precisa ser chamada em algum lugar. Ela será utilizada quando os itens forem mostrados na tela, então a chamaremos por volta da linha 100, após editarItens:
+
+```JavaScript
+editarItens.forEach(i => {
+        i.addEventListener('click', (evento) => {
+            itemAEditar = evento.target.parentElement.parentElement.getAttribute('data-value')
+            mostrarItem()
+        });
+});
+atualizaLocalStorage()
+```
+
+Agora, podemos testar nosso projeto.
+
+De volta ao navegador, manteremos a caixa do aplicativo aberta e enviaremos mais elementos no campo de texto. Serão eles: pera, batata-doce, maçã e uva.
+
+Conforme os adicionamos, note que vão aparecendo na caixa à direita, no campo do Local Storage, entre aspas duplas. Inclusive o nome das chaves, como "valor", aparece entre aspas duplas. Isso se deve ao fato de que o Local Storage os recebe como dados do tipo texto (string). Ao clicar sobre eles, temos acesso aos objetos listados logo abaixo.
+
+Estamos conseguindo enviar nossos objetos a um armazenador de dados. Mas, ao atualizarmos nossa página teclando F5, nossos itens desaparecem, continuando listados apenas na caixa à direita, ou seja, no Local Storage.
+
+Agora, precisamos criar um método que pegue as informações enviadas ao Local Storage e as mantenha na página. É o que faremos no vídeo seguinte!
+
+### Aula 04 - Para saber mais: o JSON
+
+Nesta aula aprendemos a enviar e receber dados do localStorage utilizando de alguns métodos, dois deles são: JSON.parse e JSON.stringify. E o que significa JSON?
+
+O nome JSON é abreviação de JavaScript Object Notation, ou, “notação de objeto JavaScript”. O JSON é um arquivo que nos permite armazenar e trocar dados. Para possibilitar essa troca de dados, é necessário que eles estejam em um formato padrão. Vamos comparar os exemplos abaixo:
+
+Formato JSON:
+
+```JSON
+{
+“id”: 15,
+“carro”: “Fusca”,
+“ano”: 1950,
+“categoria”: “Colecionador”,
+“raridade”: “Muito raro”
+}
+```
+
+Formato JavaScript:
+
+```JavaScript
+{
+id: 15,
+carro: “Fusca”,
+ano: 1950,
+categoria: “Colecionador”,
+raridade: “Muito raro”
+}
+```
+
+Como observado acima, JSON e JavaScript armazenam dados de formas diferentes. E a sintaxe de ambos, apesar de terem algumas diferenças, são bastante similares e pouco verbosas(muito ou pouco verboso, na programação, são expressões para caracterizar quando algum bloco de código possui muito ou pouco caracteres).
+
+O JSON é o padrão mais utilizado para troca de informações atualmente entre APIs, porém não é o único. Existem também outras soluções, o XML, é uma dessas soluções, sua sintaxe é mais verbosa, e utiliza o sistema de tags para guardar os dados.
+
+Formato XML:
+
+```XML
+<auto id=”15”>
+    <carro>FUSCA</carro>
+    <ano>1950<ano>
+    <categoria>Colecionador</categoria>
+    <raridade></raridade>
+</auto>
+```
+
+Apesar de simples, o formato JSON exige que os dados devam seguir alguns padrões:
+
+- Os dados devem sempre estar entre aspas duplas ” ”
+- É possível armazenar dados primitivos(string, number para número finitos, true, false e null)
+- Não são permitidas vírgulas após o último conjunto de chave/valor do objeto
+
+Saber dessas regras acerca dos padrões de escrita do JSON é importante, porém, muito provavelmente não será a pessoa que estiver programando que irá refatorar os dados. Como realizado nesta aula, basta utilizar o método JSON.stringify, e essa refatoração irá ser automatizada.
+
+### Aula 04 - GetItem - Vídeo 2
+
+Transcrição  
+Conseguimos enviar as informações da nossa lista de itens para o Local Storage, mas precisamos mostrá-las de volta na tela. Para isso, precisamos entender a seguinte lógica: o Local Storage guarda dados do tipo JSON, mas nossa função mostrarItem() mostra objetos, então precisamos tratar os dados do tipo JSON de volta para Javascript.
+
+Por volta da linha 8, após const ulItensComprados, criaremos uma variável do tipo const chamada listaRecuperada, que receberá as informações de localStorage e o método .getItem(), que pegará as informações de 'listaDeItens' - entre aspas simples, porque são do tipo JSON.
+
+```JavaScript
+const listaRecuperada = localStorage.getItem('listaDeItens')
+```
+
+Agora, conseguiremos tranformar o que está guardado em listaRecuperada em dados do tipo Javascript. Para isso, por volta da linha 14, depois de atualizaLocalStorage(), criaremos uma condicional:
+
+```JavaScript
+if(listaRecuperada) {
+    listaDeItens = JSON.parse(listaRecuperada)
+}
+```
+
+Se listaRecuperada tiver algum elemento, será do tipo true e transformaremos seus dados em dados do tipo Javascript. Então, chamaremos listaDeItens, onde guardaremos os elementos de volta utilizando JSON.parse(listaRecuperada).
+
+O método .parse() é o oposto de .strigfy(), pois enquanto .stringfy() transforma os elementos em dados textuais (string), .parse() os transforma em dados do tipo Javascript. Sendo assim, transformamos listaRecuperada para dados Javascript e guardamos de volta em listaDeItens.
+
+Para mostrarmos esses itens na tela, precisamos chamar a função mostrarItem().
+
+```JavaScript
+if(listaRecuperada) {
+    listaDeItens = JSON.parse(listaRecuperada)
+    mostrarItem()
+}
+```
+
+Caso listaRecuperada não tenha elementos, será do tipo false, por isso usaremos else para que ela seja um array vazio [].
+
+```JavaScript
+if(listaRecuperada) {
+    listaDeItens = JSON.parse(listaRecuperada)
+    mostrarItem()
+} else {
+    listaDeItens = []
+}
+```
+
+Vamos nos ater a um conceito importante do Javascript: true e false. O Javascript retorna false para:
+
+valores omitidos (o que pode acontecer com listaRecuperada, caso esta não tenha elementos);
+
+- 0;
+- null;
+- NaN (not a number, ou "não é um número", em português);
+- undefined;
+- " " (string vazia);
+- o próprio false.
+
+É importante termos em mente essas regras para criar condicionais, então podemos adicionar o seguinte comentário ao nosso código:
+
+```JavaScript
+// (valores omitidos, 0, null, NaN, undefined, "", false) << retornam false
+```
+
+Pronto! Criamos toda a lógica do nosso projeto, então nosso próximo passo é testá-lo.
+
+De volta ao navegador, colocaremos alguns elementos, como suco, arroz, feijão, carne e soja, e abriremos a caixa do Local Storage para conferir se os elementos foram adicionados.
+
+Em seguida, podemos dar um check em alguns itens, como suco e arroz, que devem ir para a seção de "Comprados" da nossa lista. Editaremos o item "Feijão" trocando-o por "Alface", e, ao fazermos isso, a listagem de Local Storage também deve ser alterada. Ao excluir "Alface" e "Carne" da nossa lista, devem ser excluídos, também, do Local Storage.
+
+Com esses testes, notamos que as funcionalidades do nosso projeto estão funcionando corretamente. Agora, nos resta postá-lo em algum site.
+
+No vídeo seguinte, aprenderemos a salvar nosso projeto no repositório e postá-lo em um site.
+
+### Aula 04 - Para saber mais: armazenadores de dados
+
+Nesta aula, utilizamos o armazenador da web localStorage para salvar objetos. Dessa forma, vimos a sua importância na prática para permitir a usabilidade do projeto e como existem outros armazenadores web indico a leitura do [artigo Armazenadores de dados do navegador](https://www.alura.com.br/artigos/armazenadores-de-dados-do-navegador), escrito por mim.
+
+### Aula 04 - Conhecendo o localStorage - Exercício
+
+Nesta aula você utilizou o localStorage para salvar dados do JavaScript e permitiu a funcionalidade do projeto Lista de Compras. Dessa forma, foi possível manter os itens de compra na página.
+
+Marque a alternativa correta sobre a transferência de dados entre o JavaScript e localStorage:
+
+Resposta:  
+> A linguagem de programação JavaScript possibilita criar métodos para receber informações de quem estiver utilizando alguma aplicação, porém ela não possui métodos para armazenar essas informações de forma persistente, sendo necessário conectar tal aplicação a um banco de dados ou armazenador de dados, como o localStorage.
+
+Parabéns! A linguagem JavaScript possibilita receber informações e guardá-las em objetos, arrays, variáveis, porém não possui métodos próprios para guardar de forma persistente esses dados, para isso existem banco de dados e armazenadores de dados.
+
+### Aula 04 - O que aprendemos?
+
+- Nessa aula, você aprendeu como:
+- Implementou métodos para tratar dados e salvá-los no localStorage;
+- Utilizou o JSON para viabilizar a transferência de dados para uma API;
+- Implementou métodos setItem e getItem para enviar e recuperar dados.
+
+## Aula 05 - Deploy
+
+### Aula 05 - Projeto da aula anterior
+
+Aqui você pode [baixar o arquivo zip](https://github.com/alura-cursos/lista-de-compras/archive/refs/heads/aula4.zip) da aula 04 ou [acessar os arquivos no Github](https://github.com/alura-cursos/lista-de-compras/tree/aula4).
+
+### Aula 05 - Deploy no GitHub - Vídeo 1
+
+Transcrição  
+O próximo passo para divulgar nosso projeto para o mundo é [acessar o repositório do projeto](https://github.com/luanalvesdev/lista-de-compras) Lista de Compras no Github. Na barra de menus superior, clicaremos em "Settings". Abaixo dela, no explorador de arquivos à esquerda, selecionaremos o menu "Pages".
+
+No corpo da página, veremos a seção "Build and deloyment", onde poderemos fazer o deploy do nosso projeto, ou seja, criar um site e colocá-lo no ar. Depois de criar um site para o projeto, podemos realizar outros deploys para atualizá-lo.
+
+Acessaremos a subseção "Branch", onde veremos dois botões:
+
+- um botão de lista suspensa alinhado à esquerda, com a opção "none" selecionada;
+- um botão comum à direita deste, denominado "Save".
+- Clicaremos no botão esquerdo e na lista suspensa selecionaremos a opção "main". Em um projeto maior, teremos várias branches.  Como criamos um projeto novo, ele possui apenas uma. É ela que divulgaremos.
+
+Clicaremos no botão "Save" e pronto. Não precisamos fazer mais nada. A partir dessa etapa, o Github coletará e processará todos os arquivos do nosso repositório, gerando um site a partir deles.
+
+Este processo demora alguns minutos. Após esse tempo, atualizaremos a página, e neste momento aparecerá o link de acesso no topo da página, na seção "Github Pages". O link estará dentro de um retângulo com a seguinte mensagem:
+
+Your site is live at [endereço do site]
+
+Abaixo da mensagem haverá a data do último deploy do nosso site. À direita da mensagem haverá um botão denominado "Visit site" (visitar site). Vamos clicar nele.
+
+Após o clique, uma nova aba será aberta com o nosso novo site, contendo em seu interior a nossa aplicação com todas as suas funcionalidades implementadas. Podemos acessar a barra de pesquisa superior do navegador e copiar a URL do site para divulgar o nosso projeto.
+
+Sinta-se livre para alterar o seu projeto, criar novas funcionalidades e divulgar no Fórum.
+
+Finalizamos o curso de Objetos no Javascript!
+
+### Aula 05 - Para saber mais: conhecendo o GitHub
+
+Apresentei para você o GitHub, que é o repositório online mais utilizado por empresas de tecnologia e pessoas programadoras atualmente. E assim, para guardar e fazer deploy do seu projeto!
+
+Para aprender e praticar mais Git e GitHub, você pode realizar o [curso Git e GitHub: repositório, commit e versões](https://cursos.alura.com.br/course/git-github-repositorio-commit-versoes) aqui da Alura.
+
+### Aula 05 - Para saber mais: explorando o this
+
+O this no JavaScript aponta para um objeto, e o objeto para onde está apontando, varia dependendo do contexto onde o this está inserido.
+
+Por padrão, quando chamamos o this sem nenhuma referência no escopo global, por exemplo, chamando direto no console: console.log(this), ele vai sempre estar apontando para o window, que é o objeto global do navegador.
+
+```JavaScript
+console.log(this === window)        // true
+```
+
+```JavaScript
+this.idade = 37
+console.log(window.idade)             //37
+```
+
+Alguns contextos do this em funções
+No exemplo abaixo, quando serie.retornaSerie() é declarado no console, o this dentro da função é vinculado ao objeto filme.
+
+```JavaScript
+    var serie = {
+        titulo: "Wandinha",
+        retornaSerie: function() {
+          return this.titulo;
+        }
+      };
+
+      console.log("O título da série é " + serie.retornaSerie());    // O título da série é Wandinha
+```
+
+Seria possível também definir a função e objeto separados e apenas depois anexar o objeto à função:
+
+```JavaScript
+    var serie = {
+        titulo: "Wandinha"
+
+    }
+        function retornaSerie() {
+          return this.titulo;
+    }
+
+        serie.novaSerie = retornaSerie
+
+        console.log("O título da série é " + serie.novaSerie());     //  O título da série é Wandinha
+```
+
+O this em arrow functions  
+Caso você utilize o this em uma arrow function, o seu valor será herdado do this do escopo que envolve a declaração da arrow function, o escopo léxico. Para entender melhor, confere o exemplo abaixo:
+
+```JavaScript
+    const serie = {
+        titulo: "Wandinha",
+        retornaSerie: () => this.titulo
+    }
+    console.log("O título da série é " + serie.retornaSerie());      // O título da série é undefined
+```
+
+Neste código, o this está declarado em uma arrow function, e essa função está declarada em um objeto no escopo global. Como o this na arrow function herda o escopo do elemento pai, que nesse caso é o objeto que se encontra no escopo global, a arrow function aponta para o window. O objeto global window não possui nenhuma chave com o nome titulo, e por esse motivo, o console retorna undefined.
+
+É importante entender que a forma de uso do this deve variar de acordo com o seu contexto. Gostaria de compartilhar mais alguma outra forma do uso do this? Compartilha com a gente no fórum.
+
+Se você deseja entender mais sobre o this também no contexto de Classes, pode conferir no artigo [This, Getters e Setters](https://www.alura.com.br/artigos/as-classes-no-javascript), escrito pela Rafaella Ballerini. E se deseja entender mais sobre Arrow Functions, separei o [artigo Conhecendo Arrow Functions](https://www.alura.com.br/artigos/conhecendo-arrow-functions), escrito pelo instrutor Felipe Nascimento.
+
+### Aula 05 - Acessando objeto com this
+
+Nesta aula conhecemos o uso da função this, e como é possível acessar objetos com seu uso, vamos praticar? Marque a alternativa na qual a função retorna no console:
+
+Seja bem-vinda Carla
+
+Alternativa correta
+
+```JavaScript
+var pessoa = {
+        nome: "Carla",
+        idade: 37,
+        profissao: "Desenvolvedora Front-end",
+        mostraNome: function() {
+          return this.nome;
+        }
+      };
+      console.log("Seja bem-vinda " + pessoa.mostraNome()); 
+```
+
+O this busca o objeto primeiro no escopo onde se encontra, dentro da função mostraNome, como não encontra, ele segue para o escopo anterior, ao qual a função está declarada. E assim, localiza o valor da chave nome do objeto pessoa.
+
+### Aula 05 - O que aprendemos?
+
+- Nessa aula, você aprendeu como:
+- Nesta aula você aprendeu o que é o Git e GitHub;
+- Aprendeu métodos para salvar um projeto em um repositório;
+- Realizou e entendeu o que é deploy de um projeto;
+- Conheceu o this no JavaScript.
+
+### Aula 05 - Conclusão - Vídeo
+
+Transcrição  
+Parabéns por ter concluído o curso!
+
+Agradecemos imensamente por ter acompanhado até aqui. Esperamos que tenhamos contribuído para o seu conhecimento em objetos no Javascript.
+
+Juntos codamos bastante no projeto Lista de Compras e entendemos na prática como tudo é construído ao redor de objetos na linguagem Javascript. Além disso aprendemos sobre:
+
+- armazenamento Local, ou Local Storage;
+- como realizar o deploy do projeto;
+- como salvar o projeto no Github.
+- Agora é possível compartilhar o seu conhecimento e ajudar outras pessoas no servidor Discord da Alura.
+
+Pedimos que avalie esse curso ao final desse vídeo. A sua opinião é muito importante para nós, e é a única maneira de entendermos o que manter e o que melhorar nos projetos futuros.
+
+Um abraço, e nos vemos no próximo curso!
