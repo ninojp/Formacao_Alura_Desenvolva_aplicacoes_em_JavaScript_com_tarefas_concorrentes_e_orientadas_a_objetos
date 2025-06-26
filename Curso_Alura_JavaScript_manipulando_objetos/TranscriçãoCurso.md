@@ -892,11 +892,978 @@ Escopo léxico nada mais é que funções alinhadas estarem sujeitas a buscar ob
 
 Entender sobre escopos na linguagem JavaScript é importante para construção de códigos no qual seus blocos estejam interligados, o que acontece na maioria dos casos.
 
-### Aula 02 -  - Vídeo 2
-### Aula 02 -  - Vídeo 3
-### Aula 02 -  - Vídeo 4
-### Aula 02 -  - Vídeo 5
-### Aula 02 -  - Vídeo 6
-### Aula 02 -  - Vídeo 7
-### Aula 02 -  - Vídeo 8
+### Aula 02 - Interação com usuário - Vídeo 2
 
+Transcrição  
+O nosso projeto já exibe os objetos na lista de compras. Nossa próxima etapa é manipular esses objetos no DOM. Quando houver um clique no checkbox à esquerda dos objetos, os itens devem ser movidos para a lista de itens comprados.
+
+Neste vídeo faremos o evento de clique no `<input>` do checkbox. Vamos retornar ao arquivo main.js e acessar a linha desse `<input>`, localizada acima do `<input>` de texto.
+
+```JavaScript
+function mostrarItem() {
+// Código omitido
+    listaDeItens.forEach(() => {
+// Código omitido
+            <input type="checkbox" class="is-clickable" />
+            <input type="text" class="is-size-5" value="${elemento.valor}"></input>
+// Código omitido
+    })
+}
+```
+
+Abaixo dos parênteses de listaDeItens.forEach(() => {}) criaremos a variável const inputsCheck para referenciar esse `<input>`. Já que teremos uma lista de elementos e cada elemento terá o seu input, o nosso inputsCheck receberá um document.querySelectorAll() que selecionará todos os inputs do tipo checkbox. Entre os seus parênteses, adicionaremos o parâmetro input[type="checkbox"] entre aspas simples. Este comando selecionará o checkbox por meio da sua tag no HTML.
+
+Pressionaremos "Enter" duas vezes e nessa nova linha criaremos o evento de clique, onde chamaremos o inputsCheck.forEach(). Esse método de callback será utilizado para cada um dos inputs. Entre os seus parênteses adicionaremos como parâmetros uma função anônima através do parâmetro i seguido de => e chaves {}.
+
+```JavaScript
+        inputsCheck.forEach(i => {
+
+        })
+```
+
+Dentro do bloco de chaves de inputsCheck.forEach() {} adicionaremos o i que faz referência aos inputs, seguido de .addEventListener(), cujos parênteses receberão o parâmetro click entre aspas simples e a função anônima () => {} para gerar um retorno com esse evento de clique. Os dois parâmetros serão separados por vírgula.
+
+Dica: A função anônima possui menos caracteres e por isso é a função mais utilizada em situações onde sua reutilização não é necessária.
+
+Entre os parênteses dessa função anônima adicionaremos o evento. Já entre as suas chaves adicionaremos um console.log("Fui clicado!") para printar um texto no console temos que adicionar o texto entre aspas.
+
+Abaixo temos o código completo do evento de clique.
+
+```JavaScript
+function mostrarItem() {
+// Código omitido
+    listaDeItens.forEach(() => {
+// Código omitido
+            <input type="checkbox" class="is-clickable" />
+            <input type="text" class="is-size-5" value="${elemento.valor}"></input>
+// Código omitido
+    })
+        const inputsCheck = document.querySelectorAll('input[type="checkbox"]')
+        inputsCheck.forEach(i => {
+            i.addEventListener('click', (evento) => {
+                console.log("Fui clicado!")
+            })
+        })
+}
+```
+
+Vamos testar o nosso código retornando à página da aplicação aberta no navegador. Incluiremos na lista de compras os itens "arroz", "feijão" e "chocolate". Em seguida, clicaremos com o botão direito na tela e dentro do menu aberto selecionaremos a opção "Inspecionar". Na aba aberta à direita vamos acessar a barra de menus superior e selecionar o menu "Console". Voltaremos à tela da aplicação e clicaremos no checkbox do arroz. Neste momento, será exibido o retorno abaixo no console:
+
+Fui clicado!
+
+Se clicarmos várias vezes nos checkboxes da lista de compras, surgirá uma contagem de cliques no console, à esquerda do retorno. Com isso percebemos que os inputs estão sendo lidos como únicos. Contudo, queremos saber em qual input estamos clicando.
+
+A seguir, implementaremos essa diferenciação dos inputs clicados.
+
+### Aula 02 - Índice do objeto - Vídeo 3
+
+Transcrição  
+Acessaremos novamente o arquivo main.js. Já que é possível clicar no input do checkbox, poderemos localizar qual objeto está sendo clicado. Identificamos um objeto através do seu índice, portanto precisamos, através de um clique no checkbox, percorrer toda a `<li>` até encontrarmos a linha que armazena o índice do objeto no interior do data-value:
+
+```JavaScript
+   <li class="item-compra is-flex is-justify-content-space-between" data-value="${index}">
+```
+
+Percorreremos os elementos utilizando o console.log() que implementamos anteriormente para testar o código. Vamos acessá-lo dentro dos parênteses de i.addEventListener().
+
+Entre os parênteses de console.log(), por sua vez, vamos substituir o texto "Fui clicado!" pelo comando evento.target.parentElement.parentElement.
+
+```JavaScript
+i.addEventListener('click', (evento) => {
+    console.log(evento.target.parentElement.parentElement)
+```
+
+Através deste comando utilizaremos o evento de clique para gerar um retorno. O target nos retorna um alvo, enquanto o parentElement retorna o elemento pai que está sendo clicado. O pai do checkbox é a `<div`> e o pai da `<div`> é a `<li>`. Já que queremos o pai do pai (ou seja, a `<li>` que é pai de todos os elementos), adicionamos o comando parentElement duas vezes.
+
+```JavaScript
+function mostrarItem() {
+// Código omitido
+    })
+
+        const inputsCheck = document.querySelectorAll('input[type="checkbox"]')
+        inputsCheck.forEach(i => {
+            i.addEventListener('click', (evento) => {
+                console.log(evento.target.parentElement.parentElement)
+            })
+        })
+}
+```
+
+Vamos testar o nosso código retornando à página da aplicação com o console aberto no navegador. Incluiremos o item "Chocolate" na lista de compras e clicaremos no checkbox. Neste momento o emulador exibirá uma `<li>` com o objeto que estamos clicando, cujo data-value é "0".
+
+```JavaScript
+<li class="item-compra is-flex is-justify-content-space-between" data-value="0">
+</li>
+```
+
+Adicionaremos mais três itens na lista: "Feijão", "Macarrão" e "Alface". O "Macarrão" é o terceiro objeto da lista. Se clicarmos no seu checkbox veremos que o seu índice é "2". Isso confirma que estamos clicando exatamente no objeto através do input checkbox.
+
+Voltaremos ao código. Localizamos o objeto, contudo queremos selecionar o seu data-value, ou seja, o seu índice. Para isso, retornaremos ao interior dos parênteses do console.log(), onde adicionaremos um .getAttribute('data-value') à direita do getParentElement. Dessa forma teremos acesso ao valor do índice do objeto em que estamos clicando.
+
+```JavaScript
+function mostrarItem() {
+// Código omitido
+    })
+        const inputsCheck = document.querySelectorAll('input[type="checkbox"]')
+        inputsCheck.forEach(i => {
+            i.addEventListener('click', (evento) => {
+                console.log(evento.target.parentElement.parentElement.getAttribute('data-value'))
+            })
+        })
+}
+```
+
+A partir dessa configuração, faremos a manipulação dos elementos em DOM. Nos vemos no próximo vídeo.
+
+### Aula 02 - Alterando o valor do objeto - Vídeo 4
+
+Transcrição  
+Conseguimos mostrar no console qual objeto está sendo clicado através do seu índice. Com isso, podemos guardar esse objeto numa variável para manipulá-lo depois.
+
+Acessaremos o VS Code ainda aberto no arquivo main.js. Retornaremos ao interior dos parênteses de i.addEventListener(), onde substituiremos o console.log() por const valorDoElemento, que receberá os mesmos parâmetros através do sinal =.
+
+```JavaScript
+function mostrarItem() {
+// Código omitido
+        inputsCheck.forEach(i => {
+            i.addEventListener('click', (evento) => {
+                const valorDoElemento = evento.target.parentElement.parentElement.getAttribute('data-value')
+            })
+        })
+}
+```
+
+O próximo passo é criar um método para utilizar as chaves do objeto, permitindo a manipulação dos elementos no DOM. Para isso, buscaremos o nosso objeto comprasItem entre os parênteses de listaDeItens.push().
+
+```JavaScript
+// Código omitido
+listaDeItens.push({
+    valor: comprasItem
+})
+```
+
+Adicionaremos vírgula no final à direita de comprasItem e pressionaremos "Enter". Na linha nova criaremos uma nova chave denominada checar, a qual será relacionada ao nosso check. Essa chave armazenará o valor false.
+
+```JavaScript
+// Código omitido
+
+listaDeItens.push({
+    valor: comprasItem,
+    checa: false
+})
+```
+
+Criaremos um método para alterar o valor dessa chave de false para true conforme clicamos no input. Dessa forma poderemos manipular os elementos no DOM.
+
+Para isso, abaixo da variável const valorDoElemento, chamaremos a listaDeItens[valorDoElemento].checar. Este comando nos permite acessar a chave diretamente pelo objeto, identificando-o pelo seu índice guardado em valorDoElemento. Para alterarmos a chave de false para true, adicionaremos o sinal = seguido de evento.target.checked, onde checked é um método próprio do `<input>` checkbox.
+
+Quando selecionamos o checkbox ele se torna checked. Quando o desselecionamos, o seu valor é alterado para check. Dessa forma também conseguiremos alterar o valor da chave checar.
+
+```JavaScript
+function mostrarItem() {
+// Código omitido
+        inputsCheck.forEach(i => {
+            i.addEventListener('click', (evento) => {
+                const valorDoElemento = evento.target.parentElement.parentElement.getAttribute('data-value')
+                listaDeItens[valorDoElemento].checar = evento.target.checked
+            })
+        })
+}
+```
+
+Vamos conferir o valor da chave checar. Para isso, copiaremos o comando listaDeItens[valorDoElemento].checar. Abaixo dessa linha criaremos um console.log() que receberá entre parênteses o comando que copiamos como parâmetro.
+
+```JavaScript
+function mostrarItem() {
+// Código omitido
+        inputsCheck.forEach(i => {
+            i.addEventListener('click', (evento) => {
+                const valorDoElemento = evento.target.parentElement.parentElement.getAttribute('data-value')
+                                listaDeItens[valorDoElemento].checar = evento.target.checked
+                                console.log(listaDeItens[valorDoElemento].checar)
+            })
+        })
+}
+```
+
+Vamos testar o nosso código retornando à página da aplicação com o console aberto no navegador. No campo de texto adicionaremos o elemento "Caju". Vamos conferir se temos a chave checada, clicando no checkbox de "Caju" e observando o console. Após o clique, veremos no console o retorno true. Se clicarmos novamente, veremos o retorno false abaixo do primeiro. Isso indica que conseguimos alterar o valor da chave.
+
+Estamos aprendendo a utilizar a chave de um objeto para manipular os elementos no DOM. A seguir, finalizaremos o `<input>` checkbox.
+
+### Aula 02 - Manipulando objetos no DOM - Vídeo 5
+
+Transcrição  
+Finalizaremos a funcionalidade do `<input>` checkbox.
+
+Para isso, retornaremos ao VS Code do arquivo index.html e buscaremos a `<ul>` da nova lista onde os elementos devem aparecer.
+
+```html
+<section class="pb-2">
+                <h2 class="has-text-link has-text-weight-bold is-size-4 ml-2">Comprados</h1>
+                <ul class="mx-2 borda-lista" id="itens-comprados">
+                </ul>
+</section>
+```
+
+Vamos referenciá-la pelo seu id que é itens-comprados.
+
+Retornando ao arquivo main.js, posicionaremos o cursor no final da linha const ulItens = document.getElementById("lista-de-itens") e pressionaremos "Enter". Na linha nova chamaremos o nosso id criando a variável ulItensComprados do tipo const, que receberá um document.getElementById(). Entre os parênteses adicionaremos o id itens-comprados entre aspas duplas.
+
+```JavaScript
+let listaDeItens = []
+const form = document.getElementById("form-itens")
+const itensInput = document.getElementById("receber-item")
+const ulItens = document.getElementById("lista-de-itens")
+const ulItensComprados = document.getElementById("itens-comprados")
+// Código omitido
+```
+
+Acessaremos o interior das chaves da função mostrarItem(), onde já aparecem os elementos na `<ul>` de itens. Buscaremos entre suas chaves o método listaDeItens.forEach((elemento, index) => {}).
+
+Dentro desse método e acima da linha ulItens.innerHTML +- criaremos um if() {} else {}. As chaves do else {} deverão envolver toda a `<li>` de itens.
+
+Entre as chaves do if() {} chamaremos a ulItensComprados.innerHTML seguida do sinal += e de um bloco entre crases (``).
+
+```JavaScript
+function mostrarItem(){
+// Código omitido
+    listaDeItens.forEach((elemento, index) => {
+        if() {
+        ulItensComprados.innerHTML += `
+        `    
+        } else {
+        ulItens.innerHTML += `
+    <li class="item-compra is-flex is-justify-content-space-between" data-value="${index}">
+        <div>
+            <input type="checkbox" checked class="is-clickable" />
+            <input type="text" class="is-size-5" value="${elemento.valor}"> </input>
+        </div>
+        <div>
+            <i class="fa-solid fa-trash is-clickable deletar"></i>
+        </div>
+    </li>
+    `
+        }
+})
+```
+
+Vamos inserir os elementos HTML na ulItensComprados. Para isso, acessaremos o arquivo README.md, onde copiaremos o código localizado na seção "Código modelo da li 'Comprados'".
+
+```JavaScript
+<li class="item-compra is-flex is-justify-content-space-between" data-value="">
+    <div>
+        <input type="checkbox" checked class="is-clickable" />
+        <span class="itens-comprados is-size-5"></span>
+    </div>
+    <div>
+        <i class="fa-solid fa-trash is-clickable deletar"></i>
+    </div>
+</li>
+```
+
+Colaremos esse conteúdo entre as crases de `ulItensComprados.innerHTML += ``.
+
+```JavaScript
+function mostrarItem(){
+// Código omitido
+
+    listaDeItens.forEach((elemento, index) => {
+        if() {
+        ulItensComprados.innerHTML += `
+        <li class="item-compra is-flex is-justify-content-space-between" data-value="">
+        <div>
+            <input type="checkbox" checked class="is-clickable" />
+            <span class="itens-comprados is-size-5"></span>
+        </div>
+        <div>
+            <i class="fa-solid fa-trash is-clickable deletar"></i>
+        </div>
+    </li>
+        `    
+        } else {
+// Código omitido
+        }
+})
+```
+
+Passaremos os dados do nosso objeto no atributo data-value, localizado dentro da tag de abertura da <li>, informando o index do objeto dentro de uma Template String:
+
+```JavaScript
+`${index}`
+```
+
+```JavaScript
+function mostrarItem(){
+// Código omitido
+
+    listaDeItens.forEach((elemento, index) => {
+        if() {
+        ulItensComprados.innerHTML += `
+        <li class="item-compra is-flex is-justify-content-space-between" data-value="${index}">
+
+// Código omitido
+
+}
+```
+
+Entre a abertura e o fechamento da tag `<span>` passaremos outra Template String com o elemento.valor que guarda o item a ser comprado.
+
+```JavaScript
+${elemento.valor}
+```
+
+```JavaScript
+function mostrarItem(){
+// Código omitido
+
+    listaDeItens.forEach((elemento, index) => {
+        if() {
+// Código omitido
+
+        <div>
+            <input type="checkbox" checked class="is-clickable" />
+            <span class="itens-comprados is-size-5">${elemento.valor}</span>
+        </div>
+// Código omitido
+
+}
+```
+
+Passaremos um parâmetro para o if(), adicionando entre seus parênteses um elemento.checar. Dessa forma, o if() vai conferir se a chave checar possui o valor true. Se sim, os elementos serão printados na `<ul>` de itens comprados. Se for false, eles aparecerão na `<ul>` de itens.
+
+```JavaScript
+function mostrarItem(){
+// Código omitido
+
+    listaDeItens.forEach((elemento, index) => {
+        if(elemento.checar) {
+// Código omitido
+```
+
+Já criamos a nossa lógica. A função mostrarItem() deve ser executada quando houver um clique `<input>` check. Chamaremos essa função dentro do inputsCheck.forEach(), já que o seu addEventListener() possui um escopo fechado.
+
+No final do arquivo main.js, abaixo da linha listaDeItens[valorDoElemento].checar = evento.target.checked, adicionaremos a função mostrarItem().
+
+```JavaScript
+//Código omitido
+
+inputsCheck.forEach(i => {
+        i.addEventListener('click', (evento) => {
+            valorDoElemento = evento.target.parentElement.parentElement.getAttribute('data-value')
+            listaDeItens[valorDoElemento].checar = evento.target.checked
+            mostrarItem()
+        })
+    })
+}
+```
+
+Resetaremos o valor da ulItensComprados. Entre as chaves da função mostrarItem(){}, abaixo da linha ulItens.innerHTML = '', adicionaremos o ulItens.innerHTML recebendo uma string vazia.
+
+```JavaScript
+function mostrarItem(){
+    ulItens.innerHTML = ''
+    ulItensComprados.innerHTML = ''
+    // Código omitido
+
+}
+```
+
+Vamos testar o nosso código retornando à página da aplicação aberta no navegador. Adicionaremos à lista de compras os itens "Suco" e "Uva". Clicaremos nos dois checkboxes de "Suco" e de "uva" e veremos ambos os itens serem tachados e descerem para a lista "Comprados" Isso significa que conseguimos manipular os elementos no DOM.
+
+Podemos melhorar a experiência da pessoa usuária. Quando clicamos em "Salvar Item", seria ideal que o campo de texto continuasse selecionado. Seria interessante se ele também fosse resetado.
+
+Voltaremos ao VS Code. Conseguimos manter o foco no campo de texto adicionando o comando itensInput.focus() entre as chaves do form.addEventListener("submit", function (evento) {}).
+
+```JavaScript
+form.addEventListener("submit", function (evento) {
+    evento.preventDefault()
+    salvarItem()
+    mostrarItem()
+    itensInput.focus()
+})
+```
+
+Para resetar o campo, apagaremos o console.log() localizado abaixo da função salvarItem() {}. Em seu lugar adicionaremos um itensInput.value = ''. Dessa forma, sempre que o itensInput for executado passaremos a ele um valor vazio.
+
+```JavaScript
+salvarItem() {
+// Código omitido
+
+}
+    itensInput.value = ''
+}
+```
+
+Retornaremos ao navegador para testar. Se clicarmos no campo de texto, escrevermos "Laranja" e clicarmos no botão "Salvar Item", o campo de texto continuará selecionado e o seu conteúdo será limpo.
+
+Conseguimos realizar várias funcionalidades no nosso projeto. Contudo, se atualizarmos a página, todos os itens que incluímos desaparecem.
+
+A seguir, melhoraremos o projeto implementando a funcionalidades abaixo:
+
+- deletar o objeto a partir do clique no ícone de lixeira;
+- editar os elementos;
+- manter os elementos na tela.
+- Nos vemos lá.
+
+### Aula 02 - Conhecendo escopos - Exercpicio
+
+Nesta aula você aprendeu como os escopos influenciam no acesso de objetos na linguagem JavaScript, além de que é possível criar objetos e variáveis com o mesmo nome, estando em escopos diferentes.
+
+Utilizando do conhecimento adquirido, assinale a alternativa que retorne no console o título: Casa do Dragão.
+
+Uma dica, caso tenha alguma dificuldade em entender sobre os escopos nos códigos abaixo, você pode copiá-los e testá-los no editor de código, ou no próprio console do navegador.
+
+Resposta:
+
+```JavaScript
+function mostraSeries() {
+    const serie = {
+        titulo: "Casa do Dragão"
+    }
+    function mostraNovaSerie() {
+        console.log(serie.titulo)
+
+        function novaSerie() {
+            const serie = {
+                titulo: "Grey's Anatomy"
+            }
+        }
+    }
+    mostraNovaSerie()
+}
+mostraSeries()
+```
+
+> O chamado do objeto no console.log declarado na função mostraNovaSerie() busca o objeto no seu escopo, e como não encontra, busca um escopo anterior, localizando o objeto que está declarado na função mostraSeries().
+
+## Aula 03 - Deletando e Editando Objetos
+
+### Aula 03 - Projeto da aula anterior
+
+Aqui você pode [baixar o arquivo zip da aula 02](https://github.com/alura-cursos/lista-de-compras/archive/refs/heads/aula2.zip) ou acessar os [arquivos no Github](https://github.com/alura-cursos/lista-de-compras/tree/aula2).
+
+### Aula 03 - Deletando objetos - Vídeo 1
+
+Transcrição  
+Nessa aula criaremos a funcionalidade de deletar objetos a partir do clique no ícone de lixeira, que fica ao final da linha do ícone, no lado direito da tela. Atualmente ao clicarmos nesse ícone, nada acontece.
+
+Então ao abrirmos o código main.js, observamos que a lixeira está declarada na linha 56 e possui a classe deletar. Vamos referenciar essa classe, porque não podemos repetir IDs no HTML, mas classes sim. Portanto, vamos referenciar pela classe.
+
+Na linha 73, criaremos uma variável deletarObjetos recebendo a nossa classe, com o querySelectorAll(), porque são vários ícones de lixeira. E nos parâmetros do querySelectorAll() vamos passar a classe ".deletar", entre aspas.
+
+```JavaScript
+const deletarObjetos = document.querySelectorAll(".deletar")
+```
+
+Nós já criamos a funcionalidade de localiza o objeto através do clique no inputsCheck. Portanto nosso próximo passo é copiar todo o inputsCheck, ou seja, selecionar da linha 65 a linha 71, pressionar "Ctrl + C" e, na linha 75, pressionar "Ctrl + V". Assim conseguimos reutilizar esse código.
+
+Vamos substituir o inputsCheck, que está no começo da linha 75, por deletarObjetos. Além disso, vamos apagar a linha 78, que altera o valor da chave checar, porque ela já foi utilizada. No lugar dela, vamos criar a funcionalidade para deletar objetos.
+
+```JavaScript
+//código suprimido
+    const deletarObjetos = document.querySelectorAll(".deletar")
+    deletarObjetos.forEach(i => {
+        i.addEventListener('click', (evento) => {
+            valorDoElemento = evento.target.parentElement.parentElement.getAttribute('data-value')
+            listaDeItens.splice(valorDoElemento,1)
+            mostrarItem()
+        })
+    })
+```
+
+Para deletar os objetos, usamos o splice(), que é um método multifuncional, porque com ele conseguimos:
+
+- Deletar objetos
+- Substituir um objeto por outro
+- Adicionar novos objetos
+
+Nesse caso, vamos usá-lo para deletar objetos, então nos parâmetros do splice() passamos primeiro o que queremos deletar, no caso o valorDoElemento, que é onde o objeto é identificado através do clique. Em seguida, escrevemos uma vírgula (,) e passamos a quantidade de elementos que queremos deletar a partir do elemento. Como só queremos deletar um objeto, passamos (valordoElemento,1).
+
+Dessa forma criamos o método para deletar objetos sem precisarmos escrever muitos códigos. Então vamos voltar para a página da nossa lista de compras e adicionar um novos itens, no caso, "Pera" e "Maracujá".
+
+Em seguida, ao clicarmos no ícone de lixeira que aparece ao final da linha de "Pera", vemos que esse item é excluído da lista. Feito isso, vamos marcar a caixa de seleção ao lado esquerdo da palavra "Maracujá", para movê-lo para os itens "Comprados". Ao clicarmos no ícone de lixeira novamente, notamos que esse item também foi excluído, então está funcionando nos dois casos.
+
+Conseguimos fazer mais coisas com o Splice, então vamos nos aprofundar no conhecimento desse método. Portanto, vamos voltar ao código do main.js no VS Code.
+
+Na linha 78, dentro dos parâmetro do splice(), podemos escrever uma vírgula após o 1 e, depois dela, passarmos qual elemento queremos colocar no lugar daquele que apagamos. Por exemplo:
+
+```JavaScript
+listaDeItens.splice(valorDoElemento,1,"Limão")
+```
+
+Assim substituiremos o item que excluirmos por "Limão" na tela. Para testar, vamos até nossa aplicação, adicionaremos o item "Pera" novamente. Ao clicarmos no ícone da lixeira, no lugar de "Pera" ficou escrito "undefined".
+
+Isso aconteceu porque substituímos um objeto por uma string, então nossa substituição não funcionou corretamente. Para dar certo, precisamos que "Limão" seja um objeto, então vamos deixá-lo entre chaves e definir o valor e o checar.
+
+```JavaScript
+listaDeItens.splice(valorDoElemento,1,{valor: "Limão", checar: false})
+```
+
+Agora que criamos a estrutura do nosso objeto, vai dar certo. Então vamos atualizar nossa aplicação, limpando a lista, adicionar o item "Maracujá" e depois clicar no ícone da lixeira. Ao fazermos isso, onde estava escrito "Maracujá" na lista, mudou para "Limão". Não queremos fazer isso, mas é importante entendermos esse funcionamento do splice().
+
+Com o Splice também podemos apenas adicionar novos elementos, sem fazer substituições. Para isso, no segundo elemento do parâmetro, onde determinamos a quantidade de itens que queremos apagar, definimos como zero (0), assim não apagamos nenhum elemento.
+
+```JavaScript
+listaDeItens.splice(valorDoElemento,0,{valor: "Limão", checar: false})
+```
+
+Agora vamos voltar na página da nossa aplicação, adicionar o elemento "Pera" e, quando clicamos no ícone de lixeira, acima da "Pera" aparece o "Limão". Quando clicamos na lixeira do "Limão", acima dele aparece outro "Limão".
+
+Portanto criamos um método que adiciona um novo "Limão" sempre que clicamos na lixeira. Assim entendemos todas as formas de trabalhar com o splice().
+
+Vamos voltar para o main.js para corrigir a linha 78, ou seja, substituir o zero (0) por um (1) e, depois dele, apagar as outras informações dentro do parâmetro.
+
+```JavaScript
+listaDeItens.splice(valorDoElemento,1)
+```
+
+Ainda restam alguns desafios para fazermos. Precisamos editar o elemento depois que adicionamos ele a nossa lista. Sendo assim, no próximo vídeo vocês aprenderão um método para editar objetos.
+
+### Aula 03 - Para saber mais: recortando objetos
+
+No vídeo passado, você aprendeu como utilizar o método splice(), e é importante não confundir com outro método com nome parecido, o slice().
+
+Que tal entender como o slice() funciona?
+
+Vamos supor que no projeto que estamos desenvolvendo, o Lista de Compras exista um orçamento máximo, sendo possível comprar apenas alguns itens da lista. O slice() poderia nos ajudar a selecionar quais itens poderiam ser comprados. Veja como:
+
+O slice() recorta uma cópia do array original e salva esse corte em um novo array, para isso, é possível passar dois parâmetros:
+
+O primeiro parâmetro determina a partir de onde os elementos serão recortados:
+
+```JavaScript
+let listaDeItens = [
+    {
+        item1: 'Maracujá'
+    },
+    {
+        item2: 'Manga'
+    },
+    {
+        item3: 'Uva'
+    },
+    {
+        item4: 'Suco'
+    },
+    {
+        item5: 'Alface'
+    },
+    {
+        item6: 'Feijão'
+    },
+]
+novaLista = listaDeItens.slice(2)
+console.log(novaLista)
+```
+
+O console irá retornar:
+
+```JavaScript
+{item3: 'Uva'}
+{item4: 'Suco'}
+{item5: 'Alface'}
+{item6: 'Feijão'}
+```
+
+O segundo parâmetro determina até onde essa fatia será recortada:
+
+```JavaScript
+let listaDeItens = [
+    {
+        item1: 'Maracujá'
+    },
+    {
+        item2: 'Manga'
+    },
+    {
+        item3: 'Uva'
+    },
+    {
+        item4: 'Suco'
+    },
+    {
+        item5: 'Alface'
+    },
+    {
+        item6: 'Feijão'
+    },
+]
+novaLista = listaDeItens.slice(2, 4)
+console.log(novaLista)
+```
+
+O console irá retornar:
+
+```JavaScript
+{item3: 'Uva'}
+{item4: 'Suco'}
+```
+
+Passando valores negativos para o segundo parâmetro, será contado de forma decrescente quantos elementos ficarão de fora do recorte, ou seja, será contado de trás pra frente:
+
+Passando valor 2 no primeiro parâmetro, e valor -2 no segundo parâmetro. O primeiro parâmetro identificará em ordem crescente a partir de onde os itens serão recortados('Maracujá', 'Manga'), já o segundo parâmetro com valor negativo -2, irá contar de forma decrescente quantos elementos ficarão de fora do recorte('Feijão', 'Tapioca'), ou seja, será contado de trás pra frente:
+
+```JavaScript
+let listaDeItens = [
+    {
+        item1: 'Maracujá'
+    },
+    {
+        item2: 'Manga'
+    },
+    {
+        item3: 'Uva'
+    },
+    {
+        item4: 'Suco'
+    },
+    {
+        item5: 'Alface'
+    },
+    {
+        item6: 'Feijão'
+    },
+    {
+        item7: 'Tapioca'
+    },
+]
+novaLista = listaDeItens.slice(2,-2)
+```
+
+O console irá retornar:
+
+```JavaScript
+{item3: 'Uva'}
+{item4: 'Suco'}
+{item5: 'Alface'}
+```
+
+OBS: O slice() não altera os valores do array original, ele salva os itens selecionados em um novo array. Este método também pode ser utilizado para selecionar caracteres de uma string, ou qualquer outro conjunto de elementos salvos em um array.
+
+### Aula 03 - Identificando índice de objetos - Vídeo 2
+
+Transcrição  
+Para ser possível editar os objetos, falta na tela um ícone para clicarmos e habilitar essa edição, que vamos habilitar nessa aula. No caso, usaremos dois ícones, que estão no arquivo README.md, na linha 38.
+
+```JavaScript
+<i class="fa-regular fa-floppy-disk is-clickable"></i><i class="fa-regular is-clickable fa-pen-to-square editar"></i>
+```
+
+Copiaremos esse código e vamos voltar para o main.js. Após o `<div>` da linha 55, vamos pressionar "Enter" uma vez e, na linha 56, vamos colar esses ícones que copiamos. Eles ficarão logo acima do ícone de deletar e dentro do ulItensComprados.innerHTML.
+
+```JavaScript
+//código suprimido
+function mostrarItem(){
+        ulItens.innerHTML = ''
+        ulItensComprados.innerHTML += `
+    <li class="item-compra is-flex is-justify-content-space-between" data-value="${index}">
+        <div>
+            <input type="checkbox" checked class="is-clickable" />  
+            <span class="itens-comprados is-size-5">${elemento.valor}</span>
+        </div>
+        <div>
+            <i class="fa-regular fa-floppy-disk is-clickable"></i><i class="fa-regular is-clickable fa-pen-to-square editar"></i>
+            <i class="fa-solid fa-trash is-clickable deletar"></i>
+        </div>
+    </li>
+```
+
+Voltando para nossa Lista de Compras, ao adicionarmos um item, como "Água", notamos que ao final da linha temos dois ícones antes da lixeira: o primeiro é um ícone de disquete e segundo é um quadrado com um lápis sobre ele. Nós desenvolveremos uma funcionalidade para que, ao clicarmos no ícone de lápis, habilitemos a edição e quando clicarmos no de disquete nós salvamos a edição.
+
+Outra questão que precisamos pontuar é que, ao clicarmos na caixa de seleção do item "Água", ele é movido para lista de comprados, onde esses dois ícones que adicionamos não aparecem. Isso porque não faz sentido editarmos um ícone depois que ele foi comprado.
+
+Então para editarmos os objetos precisamos criar o evento de clique para localizarmos o índice do objeto. Sendo assim, voltaremos para o arquivo main.js.
+
+Depois do fechamento dos colchetes ([]) da linha 1, vamos pressionar "Enter" e, na linha 2, criaremos uma variável do tipo let chamada itemAEditar.
+
+```JavaScript
+let listaDeItens = []
+let itemAEditar 
+//código suprimido
+```
+
+Criamos uma variável do tipo let, porque a princípio ela não terá nenhum valor. Não podemos criar uma variável do tipo constante (const) sem atribuirmos nenhum valor, porque isso resultaria em erro.
+
+Enviaremos o índice do objeto para essa variável itemAEditar, assim conseguiremos editar os objetos. Faremos isso através do evento de clique, então na linha 85 criaremos a const editarItens com esse evento:
+
+```JavaScript
+//código suprimido
+const editarItens = document.querySelectorAll(".editar")
+
+    editarItens.forEach(i => {
+        i.addEventListener('click', (evento) => {
+            itemAEditar = evento.target.parentElement.parentElement.getAttribute('data-value')
+            mostrarItem()
+        })
+    })
+```
+
+Nos parâmetros o .querySelectorAll() passamos como parâmetro o "editar" para chamarmos o ícone de edição. Em seguida, para criar o evento de clique, copiaremos o código do deletarObjetos, da linha 77 a 83.
+
+Vamos colar na linha 87 e fazer as edições necessárias para reutilizá-lo. Portanto trocaremos o nome de deletarObjetos para editarItens, apagaremos a linha 90, onde codamos o splice(), e na linha 89, ao invés de valorDoElemento, chamaremos a itemAEditar para passarmos o índice do objeto.
+
+```JavaScript
+//código suprimido
+    const editarItens = document.querySelectorAll(".editar")
+    editarItens.forEach(i => {
+        i.addEventListener('click', (evento) => {
+            itemAEditar = evento.target.parentElement.parentElement.getAttribute('data-value')
+            mostrarItem()
+            console.log(itemAEditar)
+        })
+    })
+```
+
+Na linha 91 codamos um console.log(itemAEditar) para testarmos se conseguimos localizar o elemento. Então vamos voltar para o navegador onde nosso projeto está aberto e abrir o Console.
+
+Em seguida, vamos adicionar o item "Água" à lista de compras e clicar no ícone de lápis, que representa o "editar". No Console aparece o "0", representando o ícone do objeto, ou seja, conseguimos acessá-lo.
+
+Vamos adicionar mais elementos à lista:
+
+- Água
+- Suco
+- Uva
+- Laranja
+
+Após adicionarmos mais itens na lista, e com o Console ainda aberto, notamos que quando clicamos no ícone de lápis, conseguimos retornar o índice de cada objeto.
+
+Agora que conseguimos acessar o índice de cada objeto na lista através do clique, nosso próximo passo será criar uma função para editar esses objetos. Faremos isso no próximo vídeo.
+
+### Aula 03 - Editando no DOM - Vídeo 3
+
+Transcrição  
+O próximo passo é criar uma função para salvar a edição. Escreveremos ela na linha 97 do arquivo main.js.
+
+```JavaScript
+function salvarEdicao() {
+    const itemEditado = document.querySelector()
+}
+```
+
+Então criamos a função salvarEdicao(). Nela temos o itemEditado que receberá o índice do objeto que queremos atualizar, guardado o itemAEditar, e o valor do input, ou seja, o texto que queremos substituir.
+
+Como obteremos esses valores através de tags HTML, usaremos as crases ( ``). Para obtermos a variável itemAEditar usaremos uma template string (${}), e para obtermos o texto, usaremos o input[]. Por fim, vamos testar o código com um console.log(itemEditado.value) e, para não nos confundirmos, apagaremos o console.log(itemAEditar) na linha 91.
+
+```JavaScript
+function salvarEdicao() {
+    const itemEditado = document.querySelector(`[data-value"${itemAEditar}" input[type="text"]`)
+    console.log(itemEditado.value)
+}
+```
+
+Observação: o .value em itemEditado.value se refere à propriedade value do input text, que é item do texto que estamos obtendo. Portanto o value, nesse caso, não se refere ao valor da chave do objeto, tanto que um está em português (valor) e outro em inglês (value).
+
+Nós executamos a função salvarEdicao quando o ícone de disquete é clicado. Então voltaremos na linha 57 para chamar essa função no ícone correspondente.
+
+```JavaScript
+//código suprimido
+
+<div>
+    <button onClick="salvarEdicao()"><i class="fa-regular fa-floppy-disk is-clickable"></i></button><i class="fa-regular is-clickable fa-pen-to-square editar"></i>
+    <i class="fa-solid fa-trash is-clickable deletar"></i>
+</div>
+```
+
+Então envolvemos o ícone de disquete com a tag `<button></button>` e adicionamos a função salvarEdicao no clique desse botão. Sendo assim, já podemos testar nosso código.
+
+Com nossa aplicação aberta, abriremos o Console e vamos adicionar um novo elemento na lista, no caso, "Água". Ao clicarmos no ícone com o lápis, habilitamos a edição do item no input, por exemplo, podemos apagar "Água" e escrever "Suco".
+
+Nós vamos enviar esse valor para o itemEditar ao executarmos função salvarEdicao, ou seja, quando clicamos no ícone de disquete. Ao fazermos isso, o valor do item muda para "Suco" na lista de compras e a palavra "Suco" aparece no Console do navegador. Dessa forma alteramos de "Água" para "Suco".
+
+Porém só atualizamos esse valor da variável itemEditado, e não no objeto. No próximo vídeo aprenderemos a atualizar esse valor no objeto.
+
+### Aula 03 - Array de objetos
+
+Aprendemos que em um array de objetos o índice inicia a partir de 0, porém sua posição inicia a partir de 1. Supondo que em um array de objetos chamado de veiculos, são guardados dados contendo nomes de modelos de veículos. Adicione novos objetos a partir da posição 3, sem substituir por nenhum dos outros objetos que já estão no array.
+
+Marque a alternativa que possibilita chegar nesse objetivo:
+
+Resposta:  
+> veiculos.splice(2,0, {veiculo3: "Bicicleta"}, {veiculo4: "Automóvel"})
+
+Passando como primeiro parâmetro 2, é indicado que serão adicionados novos elementos a partir da posição seguinte, ou seja, posição 3. O segundo parâmetro determina quantos elementos serão substituídos pelos novos, neste caso 0, já que o objetivo é apenas adicionar novos elementos. E o terceiro parâmetro são quais serão os novos elementos a serem adicionados no array.
+
+### Aula 03 - Editando objetos - Vídeo 4
+
+Transcrição  
+Para ser possível atualizar a lista de objetos, vamos chamar a listaDeItens na linha 99 e o console.log(listaDeItens) na linha 100.
+
+```JavaScript
+function salvarEdicao() {
+    const itemEditado = document.querySelector(`[data-value"${itemAEditar}" input[type="[text"]`)
+    console.log(itemEditado.value)
+    listaDeItens[itemAEditar].valor = itemEditado.value
+    console.log(listaDeItens)
+}
+```
+
+E para referenciar o item que queremos editar, passamos o itemAEditar, que é o índice, seguido de .valor. E atribuímos o itemEditado.value, ou seja, o valor de itemEditado, que é o novo texto.
+
+Temos outra questão para resolver: o itemAEditar precisa que seu valor seja sempre omitido quando for executado. Isso porque ele guarda um índice e, se editarmos mais de um elemento, ele ficará com o índice antigo, gerando um problema. Para isso, ao final da linha 100 vamos pressionar "Enter" e na linha 101, vamos codar:
+
+```JavaScript
+itemAEditar = -1
+```
+
+Não existe nenhum índice de objeto que começa com o número negativo, os objetos começam a partir do zero. Quando declaramos itemAEditar = -1, ele não se refere a nenhum objeto.
+
+Também precisamos chamar a função mostrarItem para ela ser executada enquanto salvamos a edição. Por fim, vamos comentar o console.log(itemEditado.value), na linha 98, para conferirmos apenas a listaDeItens pelo console.log(listaDeItens).
+
+Voltando para nossa aplicação no navegador, vamos abrir o Console. Vamos adicionar à nossa Lista de compras o "Suco". Em seguida, vamos clicar no ícone de lápis, que é o de editar e alterar de "Suco" para "Arroz". Ao clicarmos no ícone de disquete para salvar, aparece nossa lista no Console e, dessa forma, notamos que conseguimos salvar a alteração.
+
+[{...}]
+
+0: {valor: 'Arroz', checar: false}
+
+length: 1
+
+[[Prototype]]: Array(0)
+
+Clicando novamente no ícone de editar, vamos trocar de "Arroz" para "Feijão" e clicar no ícone de salvar. Novamente a lista atualizada aparece no nosso Console, mostrando que conseguimos salvar.
+
+[{...}]
+
+0: {valor: 'Feijão', checar: false}
+
+length: 1
+
+[[Prototype]]: Array(0)
+
+Então conseguimos mudar a informação na chave valor. Sabemos que conseguimos substituir porque nas duas listas temos o mesmo objeto apresentado, já que ambos têm o índice zero (0). Portanto é o mesmo objeto e conseguimos substituir o seu valor.
+
+Ainda podemos observar mais alguns aspectos para melhorar a usabilidade da nossa página. Já que estamos na escola de Front-end, também precisamos nos preocupar com a usabilidade.
+
+Por exemplo, quem utiliza a página não vai saber que precisa clicar primeiro no ícone com o lápis e depois no ícone de disquete. É interessante deixarmos apenas um ícone por vez.
+
+Além disso, o input está habilitado o tempo todo. É interessante o habilitarmos somente depois clicar no ícone de lápis, quando habilitamos a edição.
+
+Vamos resolver esses problemas a seguir.
+
+### Aula 03 - Comparando e modificando valores - Vídeo 5
+
+Transcrição  
+Para resolver os problemas de usabilidade relacionados à edição dos itens, que são os ícones de disquete, o com o lápis e o input text habilitado, vamos precisar localizar esses elementos no arquivo main.js.
+
+O input está declarado na linha 54. Então, antes do fechamento da `<input>`, precisamos adicionar uma template string para fazer uma comparação, resolvendo essa questão.
+
+Primeiramente vamos fechar a tag, adicionando o sinal de maior que (>) antes do `</input>` para fechar a tag, porque ficou faltando.
+
+```JavaScript
+//código suprimido
+<input type="text" class="is-size-5" value="${elemento.valor}"></input>`
+```
+
+Ainda na linha 54, antes de fechar a tag `<input>`, usaremos a template string (${}) para comparar se o index é diferente (!=) do itemAEditar. Se não for diferente (?), passaremos o disabled (desabilitado), uma propriedade que impede que o input seja editado. Se for diferente (:), substituímos o disabled por uma string vazia (''), para o input ser editado.
+
+```JavaScript
+//código suprimido
+`<input type="text" class="is-size-5" value="${elemento.valor}" ${index != itemAEditar ? 'disabled' : ''}>`
+```
+
+Observação: Passamos o 'disabled' entre aspas por se tratar de um dado do tipo HTML.
+
+Nesse código, o itemAEditar está vazio, a princípio, e só recebe o index do elemento como valor quando o ícone de lápis é clicado, para editar o item. Quando o index e o itemAEditar têm o mesmo valor, podemos habilitar o input para ser editado.
+
+Após o `</div>` da linha 55 vamos pressionar "Enter" para deixar um espaço entre as divs. Depois, na linha 58, precisamos configurar para mostrar ou o ícone de lápis, ou o ícone de disquete. Sendo assim, usaremos outra vez o ternário.
+
+Observação: o ternário é um tipo de condicional, como o if/else, mas é feito em apenas uma linha.
+
+Então na linha 58 codaremos uma template string que vai conter todos os ícones e, como queremos que apareça um ou outro, vamos deixar cada um entre aspas. Isso porque eles são dados HTML e na template string passamos apenas dados do tipo JavaScript, ou seja, se passamos HTML puro, dá erro.
+
+As primeiras aspas vão começar antes do `<button>` e terminar depois do `</button>`. Depois vamos abrir aspas antes do `<i>` e fechar depois do `</i>`, contendo o ícone de editar.
+
+```JavaScript
+//código omitido
+        <div>
+            ${'<button onclick="salvarEdicao()"><i class="fa-regular fa-floppy-disk is-clickable"></i></button>' '<i class="fa-regular is-clickable fa-pen-to-square editar"></i>'}
+            <i class="fa-solid fa-trash is-clickable deletar"></i>
+        </div>
+```
+
+Agora antes das primeiras aspas, dentro do template string, iremos comparar se o index == itemAEditar, porque para compararmos se são iguais, precisamos utilizar dois sinais de igual. Se for igual, queremos que apareça o primeiro botão, que é o de salvar edição, com o ícone de disquete, se forem diferentes, queremos que apareça o botão de editar, que é o ícone com o lápis.
+
+```JavaScript
+//código omitido
+        <div>
+            ${ index == itemAEditar ? '<button onclick="salvarEdicao()"><i class="fa-regular fa-floppy-disk is-clickable"></i></button>' : '<i class="fa-regular is-clickable fa-pen-to-square editar"></i>'}
+            <i class="fa-solid fa-trash is-clickable deletar"></i>
+        </div>
+```
+
+Feita a lógica do nosso código, vamos testá-la. Voltando à página da nossa lista de compras, vamos clicar no campo de texto na parte superior da tela e adicionar o elemento "Suco".
+
+Na lista, clicamos no input de "Suco" e notamos que não conseguimos mais editar. No canto direito desse item, temos apenas o ícone com o lápis, que é o de edição, e o da lixeira.
+
+Clicando no ícone de lápis, ele muda para o ícone de disquete e o input do "Suco" é habilitado para editarmos. Vamos mudar de "Suco" para "Laranja" e clicar no ícone de disquete, que é o ícone de salvar. Ao fazermos isso, o item tem seu texto alterado e não conseguimos mais editar o item.
+
+Portanto conseguimos melhorar a interatividade da pessoa usuária e a usabilidade da nossa aplicação. Também podemos pontuar mais sobre comparações no JavaScript.
+
+Por exemplo, na linha 58, onde alternamos nossos ícones, estamos comparando com dois sinais de igual (==), portanto comparamos apenas os valores dessa variáveis, e não o tipo. Isso porque o itemAEditar está guardando o valor do índice como uma String.
+
+Na linha 90, o itemAEditar recebe o valor do index a partir de um 'data-value', que está entre aspas. Por isso o índice é salvo como uma string. Sendo assim, não podemos comparar o index e o itemAEditar com três sinais de igual (===).
+
+Contudo, o indicado é sempre comprarmos com ===, que é uma comparação forte, e é importante usarmos comparações fortes no JavaScript. Para resolvermos isso sem termos sempre o resultado "false", ao invés de index === itemAEditar, codamos index === Number(itemAEditar).
+
+Assim transformamos o valor que foi salvo como string em um dado do tipo Number. Por isso também vamos usar essa conversão no ternário da linha 54, adicionando mais um sinal de igual, ou seja, index !== Number{itemAEditar}.
+
+```JavaScript
+//código omitido
+        `<div>
+            <input type="checkbox" class="is-clickable" />
+            <input type="text" class="is-size-5" value="${elemento.valor}" ${index !== Number(itemAEditar) ? 'disabled' : ''}></input>
+        </div>
+
+        <div>
+            ${ index === Number(itemAEditar) ? '<button onclick="salvarEdicao()"><i class="fa-regular fa-floppy-disk is-clickable"></i></button>' : '<i class="fa-regular is-clickable fa-pen-to-square editar"></i>'}
+            <i class="fa-solid fa-trash is-clickable deletar"></i>
+        </div>`
+```
+
+Agora podemos testar essa funcionalidade. Voltando a nossa página da lista de compras, vamos adicionar o item "Suco" a lista. Em seguida, vamos clicar no botão de editar e substituir por "Refrigerante". Ao clicarmos no ícone de disquete, conseguimos salvar a alteração. Portanto conseguimos estabelecer essa funcionalidade e fazer uma comparação forte.
+
+Vamos abrir o console do navegador, clicando com o botão direito do mouse na página e selecionando a última opção do menu, que é a "Inspecionar". Em seguida, nas abas superiores, vamos selecionar "Console".
+
+No Console, vamos escrever 10 == "10" e pressionar "Enter". Temos como retorno "true".
+
+```JavaScript
+10 == "10"
+```
+
+true
+
+O elemento da esquerda é um 10 do tipo Number, enquanto o da direita, que está entre aspas, ou seja, "10", é do tipo String. Ainda assim o retorno foi verdadeiro, porque com dois sinais de igual (==) comparamos apenas o valor.
+
+Como dos dois lados temos 10, são iguais, mas de tipos diferentes. Por isso, quando adicionamos mais um sinal de igual, o retorno é "false".
+
+```JavaScript
+10 === "10"
+```
+
+false
+
+Essas comparações no JavaScript podem se tornar confusas quando estamos trabalhando com verificações no código. O ideal é sempre utilizarmos três sinais de igual para comparações.
+
+Para resolver essa situação do exemplo, que sempre retorna "false", utilizamos o Number(), adicionando a string dentro dos parênteses.
+
+```JavaScript
+10 === Number("10")
+```
+
+true
+
+Assim conseguimos fazer uma comparação forte e termos como retorno "true".
+
+Atenção: É um consenso na programação que sempre sejam feitas comparações fortes, ou seja, com três sinais de igual (===) para evitar problemas na execução do código.
+
+Já aprendemos mais sobre comparações no JavaScript e finalizamos a parte de editar os elementos e objetos. Porém se pressionamos "F5", notamos que o item "Refrigerante", que estava na nossa lista, sumiu da tela.
+
+Esse é um problema que precisamos resolver: manter os elementos de forma consistente na tela. Faremos isso no próximo vídeo.
+
+### Aula 03 - O que aprendemos?
+
+- Nessa aula, você aprendeu como:
+- Utilizou de métodos do JavaScript que possibilitam remover, editar, adicionar e substituir elementos de um array, contextualizando - com objetos;
+- Aprendeu métodos para comparar e modificar valores.
+
+### Aula 03 -  - Vídeo 7
+### Aula 03 -  - Vídeo 8
