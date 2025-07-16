@@ -1,0 +1,12 @@
+{
+  "name": "oob-classes",
+  "version": "1.0.0",
+  "description": "Curso Alura JavaScript classes e heranças no desenvolvimento de aplicações com orientação a objetos",
+  "license": "ISC",
+  "author": "NinoJP",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "test": "test"
+  }
+}
