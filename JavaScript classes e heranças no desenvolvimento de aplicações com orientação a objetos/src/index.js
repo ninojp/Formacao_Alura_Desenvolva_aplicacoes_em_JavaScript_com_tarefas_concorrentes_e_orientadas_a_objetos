@@ -1,22 +1,30 @@
 'use strict';
-import { Mago } from "../modules/Mago.js";
-import { Personagem } from "../modules/Personagem.js";
-import { PersonagemView } from "./components/personagem-view.js";
+import Arqueiro from "../modules/Arqueiro.js";
+import ArqueiroMago from "../modules/ArqueiroMago.js";
+import Mago from "../modules/Mago.js";
+import Personagem from "../modules/Personagem.js";
+import PersonagemView from "./components/personagem-view.js";
 
-const personagemPedrinho = new Personagem('Pedrinho', 5, 'Mago');
+// const personagemPedrinho = new Personagem('Pedrinho', 5, 'Mago');
 // console.log(personagemPedrinho);
-const personagemJose = new Personagem('José', 3, 'Arqueiro');
+// const personagemJose = new Personagem('José', 3, 'Arqueiro');
 // console.log(personagemJose);
 //-------------------------------------------------------------------
 
-const personagens = [personagemPedrinho, personagemJose];
-new PersonagemView(personagens).render();
+// const personagens = [personagemPedrinho, personagemJose];
+// new PersonagemView(personagens).render();
 // const viewPersonagens = new PersonagemView([personagemPedrinho, personagemJose]);
 // console.log(viewPersonagens);
 // viewPersonagens.render();
 //-------------------------------------------------------------------------------------
 
-console.log(new Mago('gelo', 7, 9));
+// console.log(new Mago('gelo', 7, 9));
+const magoNino = new Mago('Nino', 7, 'Fogo', 5, 7);
+const magaGabi = new Mago('Gabi', 8, 'Gelo', 9, 8);
+const arqueiroBruno = new Arqueiro('Bruno', 6, 5)
+const arqueiroMagoChico = new ArqueiroMago('Chico', 7, 10, 'Fogo', 6, 8);
+new PersonagemView([magoNino, magaGabi, arqueiroBruno, arqueiroMagoChico]).render();
+
 
 //==========================================================================================
 // const personagemPedrinho = {

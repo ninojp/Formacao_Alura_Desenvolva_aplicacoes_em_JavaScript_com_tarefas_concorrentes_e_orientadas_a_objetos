@@ -1,4 +1,4 @@
-export class PersonagemView {
+export default class PersonagemView {
     constructor(personagens) {
         //personagens - será um Array de objetos das intâncias da classe Personagem
         this.ulPersonagens = document.querySelector('ul#personagens');

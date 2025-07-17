@@ -993,15 +993,480 @@ Nessa aula, você aprendeu como:
 - Como renderizar uma instância na página;
 - Model x View.
 
-## Aula 03 - 
+## Aula 03 - Fundamentos da POO
 
-### Aula 03 -  - Vídeo 1
-### Aula 03 -  - Vídeo 2
-### Aula 03 -  - Vídeo 3
-### Aula 03 -  - Vídeo 4
-### Aula 03 -  - Vídeo 5
-### Aula 03 -  - Vídeo 6
-### Aula 03 -  - Vídeo 7
-### Aula 03 -  - Vídeo 8
-### Aula 03 -  - Vídeo 1
-### Aula 03 -  - Vídeo 1
+### Aula 03 - Projeto da aula anterior
+
+Caso queira revisar o código até aqui ou começar a partir desse ponto, disponibilizamos os códigos realizados na aula anterior para [baixar nesse link](https://github.com/alura-cursos/cartas-personagens/archive/refs/heads/aula-2.zip) ou veja nosso [repositório do Github](https://github.com/alura-cursos/cartas-personagens/tree/aula-2).
+
+### Aula 03 - Extends e super - Vídeo 1
+
+Transcrição  
+No desafio da aula anterior, construímos a classe Mago. Mas, até este momento, estamos recolhendo o valor do atributo tipo quando a instância é criada.
+
+Mas o tipo pode ser bem mais do que um atributo, como uma classe completa. Pensando em Mago, há diversas características e comportamentos que são próprios, constituindo uma classe.
+
+Anteriormente, no desafio, o Mago pode ter um ElementoMagico que pode ser fogo, ar ou gelo. São personagens muito inteligentes, então poderiam ter uma propriedade de inteligencia envolvida. Além disso, essas propriedades podem interferir em levelMagico, por exemplo.
+
+Nosso objetivo é evoluir a classe Mago de uma maneira um pouco diferente da que já fizemos antes, pois diremos que ela tem suas características e comportamentos específicos, inclusive carregando as de Personagem, afinal todo Mago é um personagem.
+
+Em mago.js no VSCode, abaixo da propriedade inteligencia, adicionaremos uma nova tipo sendo igual a 'Mago'.
+
+Depois, no arquivo personagem.js, removeremos o tipo dentro dos parênteses de constructor() e de seu bloco entre as chaves.
+
+```JavaScript
+export class Personagem {
+    nome
+    vida = 100
+    mana = 100
+    level
+    tipo
+    descricao
+    constructor(nome, level) {
+        this.nome = nome
+        this.level = level
+    }
+
+    obterInsignia() {
+        if (this.level >= 5){
+            return `Implacavel ${this.tipo}`
+        }
+        return `${this.tipo} iniciante`
+    }
+}
+```
+
+Vamos ignorar o erro que aparecerá na tela e abriremos o mago.js novamente.
+
+Na primeira linha, após o nome da classe Mago, escreveremos extends Personagem e, com a tecla "Tab", iremos autocompletar e importar do caminho de "./personagem.js".
+
+Salvaremos e iremos aos parâmetros do construtor. Antes delas, ainda dentro dos parênteses, adicionaremos nome, level,.
+
+Já em seu bloco dentro das chaves {}, abriremos uma nova linha no início e digitaremos super() recebendo nome, level. Salvaremos e veremos na prática o que aconteceu.
+
+```JavaScript
+import { Personagem } from "./personagem.js"
+
+export class Mago extends Personagem {
+    elementoMagico
+    levelMagico
+    inteligencia
+    tipo = 'Mago'
+   constructor(nome, level, elementoMagico, levelMagico, inteligencia) {
+         super(nome, level)
+         this.elementoMagico = elementoMagico
+         this.levelMagico = levelMagico
+         this.inteligencia =  inteligencia
+     }
+ }
+```
+
+Em seguida, iremos ao index.js e apagaremos as duas instâncias const que criamos com personagemPedrinho e personagemJose porque irão partir da classe Mago e não da Personagem.
+
+Em seu lugar, abaixo das importações, escreveremos const com o nome magoAtonio sendo igual a new Mago(), e importaremos automaticamente de "./modules/mago.js".
+
+Dentro dos parênteses, seu nome será 'Antonio', seu level será 4, seu elemento mágico sera 'fogo', seu level mágico será 4 também, e sua inteligência será 3.
+
+Criaremos mais uma maga chamada const magaJulia sendo igual a new Mago() recebendo o nome 'Julia', seguido de 8, 'gelo', 7, 10 para as suas características.
+
+Por fim, removeremos personagemPedrinho, personagemJose dos colchetes de const personagens, e dentro deste array, teremos magoAntonio, magaJulia. Tamb´pem apagaremos o console.log() porque não o utilizaremos mais.
+
+Salvaremos e veremos o resultado na página.
+
+```JavaScript
+import { Personagem } from "./modules/personagem.js"
+import { PersonagemView } from "./components/personagem-view.js"
+import { Mago } from "./modules/mago.js"
+
+const magoAntonio = new Mago('Antonio', 4, 'fogo', 4, 3)
+const magaJulia = new Mago('Julia', 8, 'gelo', 7, 10)
+
+const personagens = [magoAntonio, magaJulia]
+
+new PersonagemView(personagens).render()
+```
+
+Com isso, nossos Magos serão renderizados na tela.
+
+![alt text](image.png)
+
+A partir desse momento, as instâncias foram criadas a partir da classe Mago e não da Personagem, e portanto removemos o tipo do constructor() de personagem.js, pois não fazia mais sentido.
+
+Porém, mantivemos o atributo tipo mesmo tendo a classe Mago por conta da PersonagemView que depende dele para renderizar as características de CSS para essa classe.
+
+Surgiram dois termos muito importantes: extends e super(). O primeiro, basicamente diz que "o Mago estende o Personagem", pertence a ele.
+
+Para sabermos que realmente aconteceu, repararemos nas cartas de personagens e veremos que a insígnia foi renderizada, ou seja, magoAntonio terá a insígnia de "Mago Iniciante" enquanto magaJulia terá de "Implacável Mago" escritas.
+
+Ou seja, não é a classe Personagem que está usando a obterInsignia(), mas sim a Mago que herdou este método e o está utilizando.
+
+Além disso, renderizamos o level, o nome, a vida e a mana que estão em Personagem, mas é o Mago que também os usa.
+
+O extends trabalha em conjunto com o super(). Se passarmos o cursor em cima deste ultimo, veremos que nada mais é do que o construtor Personagem(), e também receberá nome, level.
+
+Isso está acontecendo pois, quando criamos as instâncias coletando os valores de nome e level que estão armazenados nessa variáveis, os enviaremos para a classe pai por meio do super().
+
+Para usarmos essas propriedades no constructor(), precisaremos chamar a classe pai representada por super().
+
+Acabamos de aprender um dos grandes pilares da orientação a objetos, e toda essa lógica que comentamos é conhecida como Herança.
+
+A seguir, conheceremos os próximos desafios.
+
+### Aula 03 - Para saber mais: herança prototipada
+
+Mas e quando não existiam classes no JavaScript?
+
+No JavaScript, há uma dinâmica diferente quando comparado a linguagens baseadas em classes (como Java ou C++). Isso porque as classes no JavaScript são puramente açúcar sintático, ou seja, algo puramente estético, por debaixo dos panos, tudo no JavaScript é baseado em protótipo, não existem classes de fato, mas isso é assunto para outra hora.
+
+E isso não significa que as classes não devem ser utilizadas, ok? Pelo contrário!
+
+Você pode e deve! Isso porque a sintaxe class foi introduzida a partir do ES6(ECMAScript 2015), para justamente trazer essa maneira de criar modelos de objetos, que é feita nas outras linguagens de programação.
+
+Beleza! Você já adquiriu conhecimento a respeito da Herança baseadas em Classes, com o uso do constructor. Agora, eu recomendo que assista esse [Alura+](https://cursos.alura.com.br/extra/alura-mais/classes-e-funcoes-em-javascript-c300), onde a Instrutora Juliana Amoasei demonstra como era feito para criar modelos de objetos no JavaScript, antes da implementação das classes, por meio das Funções Construtoras.
+
+Confira também o artigo ["Prototype: descubra como quase tudo no JavaScript é um Objeto"](https://www.alura.com.br/artigos/prototype-quase-tudo-no-javascript-e-um-objeto).
+
+Bons estudos!
+
+### Aula 03 - Sobrescrevendo métodos - Vídeo 2
+
+Transcrição  
+A partir do momento em que aplicamos um relacionamento de herança, conseguimos expandir nossos horizontes para outras possibilidades. Por exemplo, o método obterInsignia() que construímos na classe Personagem. Vamos trazê-lo para a classe Mago.
+
+Nesta classe o método terá um comportamento diferente, mais direcionado, e utilizará as propriedades da classe Mago.
+
+Como isso pode ser feito? No arquivo mago.js, abaixo do constructor() pularemos uma linha e adicionaremos o obterInsignia() seguido de um bloco de chaves.
+
+Entre as chaves adicionaremos nossa lógica com um if: se this.levelMagico e this.inteligencia forem maiores ou iguais a 5, queremos como retorno a insígnia 'Mestre do ${this.elementoMagico}'. Caso contrário, queremos como retorno super.obterInsignia().
+
+```JavaScript
+constructor(nome, elementoMagico, levelMagico, inteligencia) {
+/* Código omitido */
+}
+obterInsignia() {
+    if(this.levelMagico >= 5 && this.inteligencia >= 5) {
+        return 'Mestre do ${this.elementoMagico}'
+    }
+    return super.obterInsignia()
+}
+```
+
+Salvaremos o código e voltaremos ao navegador. O mago Antônio continua com a insígnia "Mago iniciante" enquanto a insígnia da maga Júlia que antes era "Implacável mago" se tornou "Mestre do gelo". Voltaremos ao VS Code.
+
+Vamos entender o código? Criamos aquela lógica para obter a insígnia. Se a instância não atingir a condição, cairá na lógica de obterInsignia() da classe pai — ou seja, Personagem. Isso é feito por meio do super.
+
+Este é o caso do mago Antônio. Ele não possui levelMagico nem inteligencia suficientes para cair na primeira condicional, portanto caiu na obterInsignia() da classe Personagem. Por ter o level 4, obteve a insígnia "Mago iniciante".
+
+Quando pegamos um método herdado e modificamos o seu comportamento em benefício da classe filha ou derivada, estamos aplicando um grande fundamento da Orientação à Objetos: o Polimorfismo. Como o próprio nome já indica, se trata da capacidade de termos múltiplos formatos, o que é bastante utilizado em classes filhas.
+
+Trazendo essa ideia para o mundo real, temos como um bom exemplo o sistema educacional. Nele existe um método para calcular a média que assume diversos formatos. O primeiro serve para calcular médias escolares, como as do ensino médio. O segundo serve para calcular a média de estudantes da graduação, no qual somam-se outros fatores.
+
+Aprendemos sobre herança e sobre polimorfismo. A seguir, conheceremos mais um fundamento da Orientação a Objetos. Nos vemos lá.
+
+### Aula 03 - Desafio: Classe Arqueiro
+
+Agora é com você!  
+Neste desafio, você irá colocar em prática tudo que aprendeu até aqui, além de criar uma classe, constructor, propriedades e utilizar o this, agora você irá aplicar herança e polimorfismo para criar a classe Arqueiro.
+
+Lembrando que essa classe será usada nesse curso, então é muito importante que você não deixe de realizar esse desafio.
+
+O resultado esperado para este desafio será como esse objeto:
+
+alt text: carta de um arqueiro na cor azul, símbolo de flecha, com o level 7, nome Bruno, vida e mana com 100 e insígnia de Dominador de Flechas
+
+Para te auxiliar, a seguir colocarei algumas informações sobre a class Arqueiro:
+
+1) A classe arqueiro irá herdar Personagem.
+
+2) A classe Arqueiro possui 2 propriedades, são elas:
+
+- tipo que recebe como valor a string 'Arqueiro'
+- destreza
+
+3) Dentro dos parâmetros do constructor, será pedido às duas propriedades da classe pai que é nome e level e também a destreza do arqueiro.
+
+4) Deve ser enviado pelo super, as propriedades nome e level também.
+
+5) Não esqueça de utilizar o export para exportar a classe Arqueiro e o import para puxar a classe Personagem.
+
+6) Use o this para associar a variável destreza a propriedade da classe.
+
+7) Por último, a obterInsignia() para a classe Arqueiro terá um comportamento diferente, aqui nós gostaríamos que caso a destreza seja maior ou igual a 5, retorne Dominador de flechas, e aí se não cair nessa lógica, será a mesma situação que vimos na classe Mago anteriormente, irá dar um return super.obterInsignia();
+
+E lembre-se que em caso de dificuldades, você pode sempre recorrer ao fórum! Não deixe de atacar suas dúvidas e subir de nível! Bons estudos!
+
+Observação  
+Não esqueça que após a classe ser criada, as instâncias precisam ser criadas e renderizadas na página para ver como ficou!
+
+Opinião do instrutor
+
+PASSO 1  
+É necessário criar o arquivo da classe, então dentro da pasta modules, eu crio o arquivo chamado arqueiro.js.
+
+PASSO 2  
+Em seguida, crie a classe Arqueiro já exportando, use o extends para herdar Personagem e o import para puxar essa classe.
+
+```JavaScript
+import { Personagem } from "./personagem.js";
+
+export class Arqueiro extends Personagem {
+
+}
+```
+
+PASSO 3  
+Dentro do bloco, eu declaro as duas propriedades que foram passadas na instrução do desafio.
+
+```JavaScript
+import { Personagem } from "./personagem.js";
+
+export class Arqueiro extends Personagem {
+    tipo = 'Arqueiro'
+    destreza
+}
+```
+
+PASSO 4  
+Agora, está faltando criar o construtor dessa classe e chamar o super, pedir por parâmetro e associar as variáveis aos atributos da classe com o this.
+
+```JavaScript
+import { Personagem } from "./personagem.js";
+
+export class Arqueiro extends Personagem {
+    tipo = 'Arqueiro'
+    destreza
+
+    constructor(nome, level, destreza) {
+        super(nome, level)
+        this.destreza = destreza
+    }
+}
+```
+
+PASSO 5  
+Por último, a lógica da obterInsignia() para a classe Arqueiro!
+
+```JavaScript
+import { Personagem } from "./personagem.js";
+
+export class Arqueiro extends Personagem {
+    tipo = 'Arqueiro'
+    destreza
+    constructor(nome, level, destreza) {
+        super(nome, level)
+        this.destreza = destreza
+    }
+   obterInsignia() {
+        if (this.destreza >= 5)
+            return `Dominador de flechas`
+        return super.obterInsignia()
+    }
+}
+```
+
+Ah! Vamos ver como ficou?
+
+Para isso, vou criar uma instância e renderizar na página, você pode criar essa instância a sua maneira.
+
+No index.js, fica:
+
+```JavaScript
+import { Arqueiro } from "./modules/arqueiro.js"
+const arqueiroBruno = new Arqueiro('Bruno', 7, 8)
+const personagens = [magoAntonio, magaJulia, arqueiroBruno]
+```
+
+A carta do Arqueiro foi renderizada com as características descritas para essa classe no CSS!
+
+### Aula 03 - Composição - Vídeo 3
+
+Transcrição  
+Anteriormente fomos desafiados a construir a classe Arqueiro. Já temos a sua instância renderizada na página.
+
+Vamos exercitar a imaginação? Imagine se existisse um personagem que combinasse características de mais de uma classe? Por exemplo: um arqueiro que lançasse pelas flechas o elemento mágico fogo! Ou um mago que, além de ser inteligente, também tivesse a destreza do arqueiro.
+
+Vamos implementar essa ideia neste vídeo! Criaremos um personagem híbrido combinando as classes Arqueiro e Mago.
+
+Voltando ao VS Code, acessaremos o explorador e seguiremos o caminho "src > modules". No interior da pasta "modules" criaremos o arquivo arqueiro-mago.js. Vamos acessá-lo.
+
+Dentro dele adicionaremos todo o código dessa nova classe. Na linha 1 escreveremos export class ArqueiroMago extends Personagem. Após digitarmos "Personagem", o sistema fará a importação automática dessa classe inserindo o comando abaixo na primeira linha.
+
+```JavaScript
+import { Personagem } from "./personagem";
+
+export class ArqueiroMago extends Personagem
+```
+
+Vamos completar o local inserindo um .js entre as aspas duplas, logo após personagem.
+
+```JavaScript
+import { Personagem } from "./personagem.js";
+
+export class ArqueiroMago extends Personagem
+```
+
+Abriremos um bloco de chaves ao lado de export class ArqueiroMago extends Personagem. Entre essas chaves adicionaremos as propriedades ladoArqueiro, ladoMago e tipo = 'ArqueiroMago', uma em cada linha.
+
+Abaixo dessas propriedades pularemos uma linha e adicionaremos o constructor(), cujos parênteses receberão as propriedades nome, level, destreza, elementoMagico, levelMagico e inteligencia, separadas por vírgula.
+
+Em seguida abriremos o bloco de chaves do constructor. Em seu interior adicionaremos um super(nome, level). Abaixo desse comando adicionaremos this.ladoArqueiro = new Arqueiro.
+
+```JavaScript
+export class ArqueiroMago extends Personagem {
+    ladoArqueiro
+    ladoMago
+    tipo = 'ArqueiroMago'
+
+    constructor(nome, level, destreza, elementoMagico, levelMagico, inteligencia) {
+        super(nome, level)
+        this.ladoArqueiro = new Arqueiro
+    }
+}
+```
+
+Após digitarmos "Arqueiro", o sistema abrirá um dropdown com sugestões, dentre as quais selecionaremos Arqueiro que exibe à sua direita o local ./arqueiro.js. Neste momento o VS Code fará a importação automática dessa classe, inserindo o seu import na primeira linha.
+
+```JavaScript
+import { Arqueiro } from "./arqueiro.js";
+import { Personagem } from "./personagem.js";
+```
+
+À direita de new Arqueiro adicionaremos parênteses e entre eles os atributos nome, level e destreza.
+
+Abaixo dessa linha adicionaremos um this.ladoMago = new Mago.
+
+```JavaScript
+export class ArqueiroMago extends Personagem {
+    ladoArqueiro
+    ladoMago
+    tipo = 'ArqueiroMago'
+    constructor(nome, level, destreza, elementoMagico, levelMagico, inteligencia) {
+        super(nome, level)
+        this.ladoArqueiro = new Arqueiro(nome, level, destreza)
+        this.ladoMago = new Mago
+    }
+}
+```
+
+No dropdown aberto pelo sistema selecionaremos Mago que exibe à sua direita o local ./mago.js. Neste momento o VS Code fará a importação automática dessa classe, inserindo o seu import na segunda linha.
+
+```JavaScript
+import { Arqueiro } from "./arqueiro.js";
+import { Mago } from "./mago.js";
+import { Personagem } from "./personagem.js";
+```
+
+À direita de new Mago adicionaremos parênteses e entre eles os atributos nome, level, elementoMagico, levelMagico e inteligencia.
+
+```JavaScript
+export class ArqueiroMago extends Personagem {
+    ladoArqueiro
+    ladoMago
+    tipo = 'ArqueiroMago'
+    constructor(nome, level, destreza, elementoMagico, levelMagico, inteligencia) {
+        super(nome, level)
+        this.ladoArqueiro = new Arqueiro(nome, level, destreza)
+        this.ladoMago = new Mago(nome, level, elementoMagico, levelMagico, inteligencia)
+    }
+}
+```
+
+Abaixo do bloco de chaves do constructor() pularemos uma linha e criaremos para essa classe um obterInsignia() que se comportará de forma diferente. À sua direita abriremos um bloco de chaves, dentro do qual adicionaremos um return junto a uma template string entre crases, que por sua vez receberá entre chaves o this.ladoArqueiro.obterInsignia().
+
+À direita das chaves da template string adicionaremos um = e outra template string. Entre as chaves desta adicionaremos o this.ladoMago.obterInsignia(), chamado esse método.
+
+```JavaScript
+export class ArqueiroMago extends Personagem {
+    ladoArqueiro
+    ladoMago
+    tipo = 'ArqueiroMago'
+    constructor(nome, level, destreza, elementoMagico, levelMagico, inteligencia) {
+        /* Código omitido */
+
+    }
+    obterInsignia() {
+        return `${this.ladoArqueiro.obterInsignia()} = ${this.ladoMago.obterInsignia()}`
+    }
+}
+```
+
+Salvaremos nosso código e testaremos essa classe adicionando uma instância.
+
+Acessaremos o arquivo index.js. Abaixo da const arqueiroBruno adicionaremos uma const arqueiroMagoChico, onde Chico é o nome que vamos dar ao personagem. À sua direita adicionaremos um = seguido de new ArqueiroMago() Entre os parênteses preencheremos as propriedades.
+
+O arqueiro-mago chico terá os seguintes atributos:
+
+- o nome será Chico;
+- o level será 7;
+- a destreza será 10;
+- o elemento mágico será ar;
+- o level mágico será 4 e
+- a inteligência será 8.
+
+```JavaScript
+/* Código omitido */
+const arqueiroBruno = new Arqueiro('Bruno', 7, 8)
+const arqueiroMagoChico = new ArqueiroMago('Chico', 7, 10, 'ar', 4, 8)
+```
+
+Só falta puxar a instância para o arranjo de personagens. Entre os colchetes da const personagens, após arqueiroBruno, adicionaremos uma vírgula e escreveremos arqueiroMagoChico.
+
+```JavaScript
+/* Código omitido */
+
+const arqueiroBruno = new Arqueiro('Bruno', 7, 8)
+const arqueiroMagoChico = new ArqueiroMago('Chico', 7, 10, 'ar', 4, 8)
+
+const personagens = [magoAntonio, magaJulia, arqueiroBruno, arqueiroMagoChico]
+```
+
+Salvaremos nosso código e voltaremos ao navegador para ver o novo personagem renderizado na página.
+
+![alt text](image-1.png)
+
+Voltaremos ao VS Code e acessaremos novamente o arquivo arqueiro-mago.js. Nele aplicamos tudo o que vimos até agora:
+
+- utilizamos import e export;
+- aplicamos herança com o extends e o super;
+- criamos as propriedades e o constructor;
+- utilizamos o this e
+- aplicamos polimorfismo na função obterInsignia(), onde criamos um comportamento diferente por meio da união das funções ladoArqueiro.obterInsignia() e ladoMago.obterInsignia().
+
+Adicionamos até mesmo um elemento extra: uma instância de Arqueiro e outra de Mago dentro de uma classe, as quais salvamos nas propriedades ladoArqueiro e ladoMago. Essa etapa é muito importante pois é utilizada pela função polimorfa obterInsignia().
+
+Este é um exemplo clássico de quando a herança não é suficiente. É impossível herdar Personagem, Mago, Arqueiro e mais outras classes que quisermos.
+
+Na herança existe um relacionamento do tipo "é um". Ou seja, todo mago é um personagem. Contudo, o que fizemos em obterInsignia() é um esquema de Composição, onde o relacionamento é "tem um" — ou seja, o arqueiro-mago tem um arqueiro e tem um mago.
+
+Podemos levar este exemplo para um sistema no mundo real. Por exemplo, em uma aplicação de vendas, suponhamos que existam duas classes: ItemPedido e Produto, as quais possuem características próprias e características comuns a ambas.
+
+Um exemplo de característica própria seria a propriedade quantidade. Em Produto, a quantidade aponta para o estoque, enquanto que em ItemPedido, ela aponta para o carrinho de compras. Outro exemplo seria o preço: em Produto ele é padrão, enquanto que no ItemPedido o preço pode variar de acordo com ofertas e promoções, como a "Leve 3 e pague 2".
+
+Como exemplo de característica compartilhada temos o nome do produto, a sua cor, a descrição e o seu código. Portanto, para esse tipo de característica existe um relacionamento de composição, onde uma classe contém a outra.
+
+Chegamos ao fim de mais um vídeo. Aprendemos sobre herança, polimorfismo e composição. A seguir, descobriremos o nosso próximo passo. Vamos lá.
+
+### Aula 03 - Quando utilizar cada um? - Exercício
+
+Um ponto em comum entre a Herança e a Composição, são que as duas se comportam como mecanismos para reutilizar funcionalidades e isso ocorre de acordo com o objetivo a ser atingido. Mediante o seu conhecimento adquirido ao longo dessa aula, assinale as alternativas corretas que retratam a necessidade de uso mais adequado desses dois fundamentos de OO.
+
+Respostas:
+
+Em uma lógica em que há a Classe Pai e a Classe Filha, em que ocorre uma extensão de atributos e métodos de uma classe, a herança está sendo aplicada!
+
+> A Classe Pai é a classe que foi herdada pelas filhas, costuma-se ter nessa classe, características bem genéricas, que podem ser similares para diversas classes filhas. A Classe Filha é a classe que herda da classe Pai, nela contém atributos e métodos não correspondentes entre classes, ou seja, mais especializados.
+
+Quando um comportamento padrão é modificado, para fazer com que um objeto possa assumir diversos formatos desse comportamento, utilizamos a composição.
+
+> Quando uma classe precisa usar o comportamento de outra classe, é mais indicado usar composição ao invés de herança. Isso ocorre quando há um contexto de “usar” algo e não de “ser” algo.
+
+### Aula 03 - O que aprendemos?
+
+- Nessa aula, você aprendeu como:
+- Utilizar extends e super na herança;
+- Sobrescrever métodos com polimorfismo;
+- Utilizar parte de uma classe em outra com composição.
+
+## Aula 04 - 
+
+### Aula 04 -  - Vídeo 1
