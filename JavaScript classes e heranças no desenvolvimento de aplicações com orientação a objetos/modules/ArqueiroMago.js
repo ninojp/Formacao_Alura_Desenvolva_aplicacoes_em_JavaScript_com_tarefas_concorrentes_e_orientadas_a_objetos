@@ -3,7 +3,8 @@ import Mago from "./Mago.js";
 import Personagem from "./Personagem.js";
 
 export default class ArqueiroMago extends Personagem {
-    tipo = 'ArqueiroMago';
+    static tipo = 'ArqueiroMago';
+    static descricao = 'O ArqueiroMago, é o detentor de lancas e flechas mágicas!';
     constructor(nome, level, destreza, elementoMagico, levelMagico, inteligencia) {
         super(nome, level);
         //Composição, ou seja, instâncias de outras classes dentro da classe ArqueiroMago.

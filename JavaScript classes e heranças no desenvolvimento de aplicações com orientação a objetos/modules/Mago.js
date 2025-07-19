@@ -1,7 +1,8 @@
 import Personagem from "./Personagem.js";
 
 export default class Mago extends Personagem {
-    tipo = 'Mago';
+    static tipo = 'Mago';
+    static descricao = 'O Mago, é implacável!';
     constructor(nome, level, elementoMagico, levelMagico, inteligencia){
         super(nome, level);
         this.elementoMagico = elementoMagico;

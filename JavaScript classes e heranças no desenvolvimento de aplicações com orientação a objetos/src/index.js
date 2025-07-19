@@ -19,11 +19,25 @@ import PersonagemView from "./components/personagem-view.js";
 //-------------------------------------------------------------------------------------
 
 // console.log(new Mago('gelo', 7, 9));
-const magoNino = new Mago('Nino', 7, 'Fogo', 5, 7);
+const magoNino = new Mago('Nino', 2, 'Fogo', 3, 4);
 const magaGabi = new Mago('Gabi', 8, 'Gelo', 9, 8);
 const arqueiroBruno = new Arqueiro('Bruno', 6, 5)
 const arqueiroMagoChico = new ArqueiroMago('Chico', 7, 10, 'Fogo', 6, 8);
-new PersonagemView([magoNino, magaGabi, arqueiroBruno, arqueiroMagoChico]).render();
+const personagens = [magoNino, magaGabi, arqueiroBruno, arqueiroMagoChico];
+new PersonagemView(personagens).render();
+
+console.log(Personagem.verificarVencedor(magoNino, magaGabi));
+
+//============================================================================================
+//Útil para inspecionar métodos estáticos, propriedades da classe e o próprio construtor.
+// console.log(Personagem);
+//Em JavaScript, new Personagem é equivalente a new Personagem(), 
+//pois o construtor não exige argumentos obrigatórios (mas espera nome e level).
+// console.log(new Personagem);
+// console.log(new Personagem());
+
+//com a declaração de static na classe Personagem, o código abaixo não funcionaria
+// console.log(new Personagem().verificarVencedor(magoNino, magaGabi));
 
 
 //==========================================================================================

@@ -55,7 +55,7 @@ header {
 }
 
 .personagem.selecionado {
-    transform: translateY(-1.25rem);
+    transform: translateY(-1.45rem);
 }
 
 .container-superior {

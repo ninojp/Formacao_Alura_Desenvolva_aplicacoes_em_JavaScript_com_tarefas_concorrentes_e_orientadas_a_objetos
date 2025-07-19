@@ -1,24 +1,31 @@
+import Personagem from "../../modules/Personagem.js";
+import { mostrarModal } from "./modal.js";
+
 export default class PersonagemView {
-    constructor(personagens) {
-        //personagens - será um Array de objetos das intâncias da classe Personagem
+    // personagens
+    // personagensSelecionados
+    //personagens - será um Array de objetos das intâncias da classe Personagem
+    constructor(personagens, personagensSelecionados=[]) {
         this.ulPersonagens = document.querySelector('ul#personagens');
         this.personagens = personagens;
+        this.personagensSelecionados = personagensSelecionados;
+        this.escutarEventoDuelo();
     };
     render() {
-        this.ulPersonagens.innerHTML = ''
+        this.ulPersonagens.innerHTML = '';
         this.personagens.forEach(personagem => {
-            const personagemLI = this.criaPersonagem(personagem)
-            this.ulPersonagens.appendChild(personagemLI)
-        })
-    }
+            const personagemLI = this.criaPersonagem(personagem);
+            this.ulPersonagens.appendChild(personagemLI);
+        });
+    };
     //-----------------------------------------------------------
     criaPersonagem = (personagem) => {
-        const personagemLI = document.createElement('li')
-        personagemLI.classList.add('personagem', personagem.tipo)
-        //const estaSelecionado = this.personagensSelecionados.indexOf(personagem) !== -1 //sintaxe para quando encontra no array
-        //if (estaSelecionado) personagemLI.classList.add('selecionado')
-        personagemLI.innerHTML = `
-            <div class="container-superior">
+        const personagemLI = document.createElement('li');
+        personagemLI.classList.add('personagem', personagem.constructor.tipo);
+        const estaSelecionado = this.personagensSelecionados.indexOf(personagem) !== -1; //sintaxe para quando encontra no array
+        if (estaSelecionado) personagemLI.classList.add('selecionado');
+        personagemLI.innerHTML = 
+            `<div class="container-superior">
                 <div class="cabecalho">
                     <div class="combate"></div>
                     <div class="level">
@@ -30,14 +37,14 @@ export default class PersonagemView {
                 <div class="container-imagem">
                     <div class="imagem"></div>
                     <div class="container-tipo">
-                        <h2 class="tipo">${personagem.tipo}</h2>
+                        <h2 class="tipo">${personagem.constructor.tipo}</h2>
                     </div>
                 </div>
                 <div class="container-nome">
                     <h3 class="nome">${personagem.nome}</h3>
                 </div>
                 <div class="container-descricao">
-                    <p class="descricao"></p>
+                    <p class="descricao">${personagem.constructor.descricao}</p>
                 </div>
             </div>
             <div class="container-inferior">
@@ -46,7 +53,7 @@ export default class PersonagemView {
                 <img src="./src/assets/img/icone-vida.png" class="icone-vida">
                 <h4 class="mana">${personagem.mana}</h4>
                 <h4 class="vida">${personagem.vida}</h4>
-            </div>`
+            </div>`;
         /*const containerLevel = personagemLI.querySelector('.level')
         containerLevel.onclick = (evt) => {
             evt.stopPropagation()
@@ -54,19 +61,17 @@ export default class PersonagemView {
             if (evt.target.classList.contains('aumentar-level')) personagem.aumentarLevel()
             this.render()
         }*/
-        /*personagemLI.onclick = () => {
-            const jaTem2Selecionados = this.personagensSelecionados.length === 2
+        personagemLI.onclick = () => {
+            const jaTem2Selecionados = this.personagensSelecionados.length === 2;
             if (!jaTem2Selecionados || estaSelecionado) {
-                personagemLI.classList.toggle('selecionado')
-    
-                if (!estaSelecionado) return this.adicionaSelecao(personagem)
-    
-                this.removeSelecao(personagem)
-            }
-        }*/
+                personagemLI.classList.toggle('selecionado');
+                if (!estaSelecionado) return this.adicionaSelecao(personagem);
+                this.removeSelecao(personagem);
+            };
+        };
         return personagemLI;
     };
-    /*adicionaSelecao = (personagem) => {
+    adicionaSelecao = (personagem) => {
         this.personagensSelecionados.push(personagem)
         this.render()
     }
@@ -84,5 +89,5 @@ export default class PersonagemView {
             this.personagensSelecionados.splice(0, this.personagensSelecionados.length)
             this.render()
         })
-    }*/
+    }
 };

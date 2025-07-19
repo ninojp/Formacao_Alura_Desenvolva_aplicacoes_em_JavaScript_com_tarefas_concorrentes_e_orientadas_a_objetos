@@ -1467,6 +1467,275 @@ Quando um comportamento padrão é modificado, para fazer com que um objeto poss
 - Sobrescrever métodos com polimorfismo;
 - Utilizar parte de uma classe em outra com composição.
 
-## Aula 04 - 
+## Aula 04 - Static
 
-### Aula 04 -  - Vídeo 1
+### Aula 04 - Projeto da aula anterior
+
+Caso queira revisar o código até aqui ou começar a partir desse ponto, disponibilizamos os códigos realizados na aula anterior para [baixar nesse link](https://github.com/alura-cursos/cartas-personagens/archive/refs/heads/aula-3.zip) ou veja nosso [repositório do Github](https://github.com/alura-cursos/cartas-personagens/tree/aula-3).
+
+### Aula 04 - Propriedades estáticas - Vídeo 1
+
+Transcrição  
+Observação: A Nay apresentará essa aula.
+
+Voltando nossa atenção às classes que criamos até agora, podemos notar que em todas existe um atributo que possui um valor fixo para todas as instâncias criadas a patir desta classe: o tipo.
+
+No arquivo arqueiro.js, o tipo é Arqueiro; no arquivo mago.js, o tipo é Mago, e assim sucessivamente. Existe uma sintaxe especial e uma maneira específica de lidar com este tipo de atributo. É o que vamos implementar neste vídeo.
+
+Para isso, no arquivo arqueiro.js, selecionaremos, na linha 4, tipo =, teclaremos "Ctrl + Shift + H" e, no menu lateral esquerdo que surgirá, teremos dois campos: o superior corresponde ao que selecionamos e o inferior, é como queremos que fique após a substituição. Neste campo inferior, incluiremos o trecho static tipo =.
+
+```JavaScript
+static tipo =
+```
+
+Feito isso, clicaremos no ícone à direita deste campo inferior. Uma mensagem deve aparecer questionando se realmente desejamos fazer esta modificação, então basta confirmarmos clicando na opção "Replace". Ao confirmarmos, a modificação é realizada nos 3 arquivos: arqueiro-mago.js, arqueiro.js e mago.js.
+
+Você já viu como trabalhar com propriedades que possuem seu valor ditado a partir da instância, como a propriedade nome. No entanto, as propriedades estáticas estão relacionadas à classe como um todo, e não apenas à uma instância específica. Para que ela seja interpretada como tal, adicionamos a palavra static na frente do atributo. Assim, é possível rastrear informações relacionadas à classe inteira, em oposição à informações que variam de instância para instância.
+
+Abrindo o navegador, percebemos que todas as cartas do projeto D&D foram alteradas, pois perderam todas as características de CSS do seletor que tem o mesmo nome que o tipo. Além do mais, onde deveria ser renderizado a informação do valor do tipo, ficou como "undefined", sendo "undefined iniciante" e "implacável undefined". Veremos como solucionar este problema.
+
+De volta ao VS Code, acessaremos o arquivo personagem-view.js e faremos uma modificação onde é setado personagem.tipo, por volta da linha 19, onde adicionamos uma classe. Modificaremos, também, a linha 40, que está preenchendo o h2.
+
+Selecionaremos personagem.tipo, teclaremos "Ctrl + D" e navegaremos com as setas para direita e esquerda. Após personagem., adicionaremos constructor.. Note que essa modificação se dá em ambas as linhas, 19 e 40.
+
+```JavaScript
+personagem.constructor.tipo
+```
+
+Agora, acessaremos o arquivo personagem.js, e dentro do método obterInsignia() modificaremos as linhas 16 e 18. Selecionaremos this.tipo, na linha 16, teclaremos "Ctrl + D", navegaremos com as setas para depois de this. e adicionaremos constructor..
+
+```JavaScript
+this.constructor.tipo
+```
+
+De volta ao navegador, percebemos que tudo voltou a funcionar normalmente.
+
+O que aconteceu foi uma questão de acesso. Como agora a propriedade tipo é estática, não pode mais ser acessada diretamente pelo objeto, com personagem.tipo, da mesma forma que não seria possível acessar magoAtonio.tipo, por exemplo, pois retornaria "undefined". Sendo assim, foi preciso subir um nível e utilizar o constructor, que representa a própria classe daquele objeto.
+
+O tipo, agora, é uma propriedade estática, mas vida e mana também possuem valores fixos para todas as instâncias, então podemos nos questionar se deveriam ser estáticas também.
+
+Para responder essa questão, precisamos lembrar que estamos utilizando o exemplo do jogo, onde os personagens já possuem valores inicialmente pré-definidos para vida e mana. Mas, ao longo da partida, esses valores podem ser modificados se o personagem for atacado e perder vida, ou atacar e perder mana, por exemplo. Sendo assim, apesar dessa lógica não estar sendo implementada aqui, na prática não tratam-se de valores estáticos.
+
+Mas será que podemos criar outra propriedade que faça sentido ser estática? A resposta é sim, e você terá a oportunidade de praticar isso no desafio disponibilizado após o vídeo. Boa sorte!
+
+### Aula 04 - Para saber mais: acessando pelo console
+
+Como acessar as propriedades estáticas no console do devtools?
+Como vimos anteriormente, existem atributos que têm o seu valor ditado a partir da instância, por exemplo, a propriedade nome. Para acessar no console esse tipo de atributo que não é estático e varia de acordo com a instância, podemos fazer da seguinte forma:
+
+```JavaScript
+const magoAntonio = new Mago('Antonio', 4, 'fogo', 4, 8)
+console.log(magoAntonio.nome) 
+```
+
+E no console irá retornar Antonio.
+
+Ou seja, utilizamos a variável que armazena a instância + notação de ponto + atributo.
+
+Porém, quando se trata de propriedades que são estáticas como o tipo, elas estão associadas a classe como um todo, em vez de uma instância específica. Dessa forma, para acessar é necessário subir para o nível da classe. Isso pode ser feito por meio de duas maneiras.
+
+1
+
+```JavaScript
+console.log(magoAntonio.constructor.tipo)
+```
+
+No console irá retornar Mago. Assim estamos pegando a instância e subindo para o nível da sua classe por meio da palavra chave constructor para acessar o tipo.
+
+2
+
+```JavaScript
+console.log(Mago.tipo)
+```
+
+No console também irá retornar Mago. Aqui estamos setando diretamente a classe com o seu atributo.
+
+### Aula 04 - Desafio: criando a 'static descricao'
+
+Agora é com você  
+Você acabou de aprender como criar atributos estáticos e construiu o static tipo para as classes do nosso projeto. Porém, existe uma outra propriedade que pode ser criada e que se enquadra como uma propriedade estática. Essa propriedade é a descrição!
+
+A ideia da lógica em nosso projeto, é que todas as instâncias da classe Mago tenham a mesma descrição, da classe Arqueiro também e por aí vai.
+
+O texto dessa descrição irá ser renderizado nessa div que se localiza abaixo do nome na carta do personagem. Veja:
+
+alt text:carta verde com dois retângulos, o primeiro tem uma altura menor e está escrito Julia e o que está abaixo tem uma altura maior e está vazio
+
+Eu irei colocar algumas sugestões de textos para as descrições de cada classe, mas fique a vontade para fazer personalizado!
+
+- Descrições das classes
+- ArqueiroMago: 'Detentor de lancas e flechas mágicas!'
+- Arqueiro: 'Você tem o meu arco!'
+- Mago: 'O mago é implacável!'
+
+Opinião do instrutor
+
+PASSO 1: criando as descrições  
+As descrições ficarão acima do bloco do constructor e abaixo de static tipo
+
+No arqueiro.js:
+
+```JavaScript
+static descricao = 'Você tem o meu arco!'
+```
+
+No arqueiro-mago.js:
+
+```JavaScript
+static descricao ='Detentor de lancas e flechas mágicas!'
+```
+
+No mago.js:
+
+```JavaScript
+static descricao = 'O mago é implacável!'
+```
+
+PASSO 2: renderizando as descrições  
+Para renderizar na página as descrições, vou até o arquivo personagem-view.js e no parágrafo localizado dentro da div com a class="container-descricao", preencho seu conteúdo interno com ${ personagem.constructor.descricao }. O código ficará assim:
+
+```JavaScript
+<p class="descricao">${ personagem.constructor.descricao }</p>
+```
+
+Perfeito! Com isso, as descrições já foram renderizadas dentro da classe dos personagens.
+
+![alt text](image-2.png)
+
+### Aula 04 - Métodos estáticos - Vídeo 3
+
+Transcrição  
+Já passamos pelas propriedades estáticas. Agora, trabalharemos com os métodos. Para isso, criaremos, em nossa aplicação, um método que receberá dois personagens (ou duas instâncias) e verificará o level para definir quem será o vencedor do duelo.
+
+De volta ao VS Code, acessaremos o arquivo personagem.js, onde criaremos o método. Vale ressaltar que o criaremos nesse arquivo porque será comum a todas as classes.
+
+Após o método obterInsignia(), por volta da linha 21, colocaremos static verificarVencedor(personagem1, personagem2), pois será um método estático. Dentro, faremos algumas condicionais, da seguinte forma:
+
+```JavaScript
+verificarVencedor(personagem1, personagem2) {
+        if (personagem1.level === personagem2.level) {
+            return 'Empate!!!'
+        }
+
+        if (personagem1.level > personagem2.level) {
+            return `${ personagem1.constructor.tipo } ${personagem1.nome} é o vencedor!`
+        }
+
+        return `${ personagem2.constructor.tipo } ${personagem2.nome} é o vencedor!`
+    }
+```
+
+Ele será estático porque, diferente do método obterInsignia(), chamado constantemente pelas instâncias que são criadas, verificarVencedor() não pertence à instância e não pode ser usado nem chamado por elas, mas apenas pela classe a qual pertence. Além do mais, este método atua como uma função utilitária que vai desempenhar o seu papel independente da instância.
+
+Para testar, acessaremos index.js e, por volta da linha 15, digitaremos console.log(Personagem.verificarVencedor(arqueiroBruno, magoAntonio)).
+
+```JavaScript
+console.log(Personagem.verificarVencedor(arqueiroBruno, magoAntonio))
+```
+
+Teclaremos "Ctrl + S" para salvar, voltaremos ao navegador e veremos que o resultado já aparece no console: Arqueiro Bruno é o vencedor!, já que, no código, arqueiro Bruno possui level 7, enquanto mago Antonio é level 4.
+
+Agora, faremos uma modificação. Ao invés de utilizarmos Personagem.verificarVencedor(), passaremos magaJulia(arqueiroBruno, magoAntonio):
+
+```JavaScript
+console.log(magaJulia(arqueiroBruno, magoAntonio));
+```
+
+No console, note que isso gera um erro, porque, além de não ser permitido que a instância utilize esse método, não faz sentido que maga Julia queira saber o resultado do vencedor entre arqueiro Bruno e mago Antonio.
+
+De volta à aplicação, note que, no lado superior direito, existe um botão chamado "Duelar", e no código, há um script relacionado a um modal, o que nos leva ao seguinte questionamento: será que isso tem a ver com método verificarVencedor?
+
+Responderemos essa questão no próximo vídeo!
+
+### Aula 04 - Para saber mais: acessando um método static
+
+Sobre os métodos estáticos, eu recomendo que você leia a solução para [esse tópico do fórum](https://cursos.alura.com.br/forum/topico-quando-usar-um-metodo-static-133014), lá a instrutora Laís Cavalcanti explica duas maneiras de acessar um método estático.
+
+No console.
+Em outro método estático dentro de uma mesma classe.
+
+Bons estudos!
+
+### Aula 04 - Renderizando o vencedor! - Vídeo 5
+
+Transcrição  
+Neste vídeo, focaremos no arquivo personagem-view.js e abordaremos alguns trechos de código que estão comentados desde o projeto base, pois são eles que darão funcionalidade à nossa aplicação.
+
+O intuito deste vídeo é que, ao final dele, seja possível clicar e selecionar dois personagem para que, ao clicar em "Duelar", seja aberto um modal com o resultado do duelo - o que, até então, víamos apenas no console.
+
+No VS Code, na pasta components, temos dois arquivos: modal.js e personagem-view.js. Em modal.js, temos uma lógica para remover e adicionar a classe de CSS visivel, que contém as propriedades para que o modal apareça. Veremos como fazer isso.
+
+No arquivo personagem-view.js, abaixo do atributo personagens, criaremos um outro atributo, por volta da linha 3, chamado personagensSelecionados.
+
+```JavaScript
+personagensSelecionados
+```
+
+Na linha 8, dentro do bloco do construtor, incluiremos this.personagensSelecionados inicializando-o como um array vazio [].
+
+```JavaScript
+this.personagensSelecionados = []
+```
+
+Em seguida, colocaremos this.escutarEventoDuelo() com parêntes para chamarmos o método.
+
+```JavaScript
+this.personagensSelecionados = []
+this.escutarEventoDuelo()
+```
+
+Agora, removeremos os comentários /* */ das linhas 88 a 113. Note que estes 3 métodos (adicionaSelecao, removeSelecao e escutarEventoDuelo), que até então estavam comentados, utilizam o atributo que acabamos de criar personagensSelecionados.
+
+O método adicionaSelecao adiciona a carta clicada, ou seja, o personagem selecionado, ao array de personagensSelecionados, enquanto removeSelecao faz o oposto e retira a carta/personagem do array caso você clique novamente.
+
+Já o método escutarEventoDuelo, adiciona um evento de clique ao botão "Duelar", depois chama o método verificarVencedor, passando como parâmetros os dois personagens selecionados, e chama a função mostrarModal, presente no arquivo modal.js.
+
+Mais acima, no código, removeremos os comentários das linhas 74 a 83. Neste trecho, há uma função que faz com o que a carta seja clicável, além de fazer a troca do clique de adição e clique de remoção da seleção.
+
+Removeremos, também, os comentários das linhas 24 e 26. Agora, nos resta importar tanto a classe personagens quanto o método mostrarModal, porque são eles os responsáveis por buscar o index do elemento do personagem selecionado, que vai para o array, e adicionar uma classe de CSS que responsável pelo comportamento da carta saltar quando for selecionada.
+
+Portanto, na linha 1, adicionaremos, respectivamente, os seguintes comandos de importação:
+
+```JavaScript
+import { Personagem } from '../modules/personagem.js'
+import { mostrarModal } from '.modal/js'
+```
+
+Feito isso, vamos testar.
+
+De volta ao navegador, selecionaremos a carta do arqueiro Bruno e do mago Antonio - ambas devem saltar ao serem clicadas. Em seguida, clicamos em "Duelar" e o modal deve aparecer com a mensagem do vencedor: Arqueiro Bruno é o vencedor!.
+
+O projeto D&D está quase finalizado. Já aprendemos sobre classes, construtor, herança, polimorfismo, composição e, agora, sobre static.
+
+Nos vemos na próxima aula, onde será apresentado o desafio final sobre encapsulamento!
+
+### Aula 04 - Entendendo sobre estáticos - Exercício
+
+De acordo com os conhecimentos adquiridos ao longo desta aula, assinale as alternativas que contém afirmações corretas sobre a implementação dos métodos estáticos.
+
+Alternativa correta  
+Se você criar uma instância de uma classe que contém um método estático e tentar chamar esse métodos nessa instância, o JavaScript retornará um Error.
+
+> Como o método estático pertence a classe, caso eu queria acessar por meio de uma instância, no console irá retornar um TypeError dizendo que aquele método não é uma função.
+
+Alternativa correta  
+Métodos estáticos são usados para implementar funções que pertencem à classe como um todo, mas não a objetos específicos dela.
+
+> Um dos princípios básicos é que métodos estáticos são métodos da classe, sendo igual para todas as instâncias.
+
+### Aula 04 - O que aprendemos?
+
+Nessa aula, você aprendeu como:
+
+- Criar e acessar propriedades estáticas;
+- Criar e acessar métodos estáticos.
+
+## Aula 05 - Encapsulamento
+
+### Aula 05 -  - Vídeo 1
+### Aula 05 -  - Vídeo 2
+### Aula 05 -  - Vídeo 3
+### Aula 05 -  - Vídeo 4
+### Aula 05 -  - Vídeo 5
+### Aula 05 -  - Vídeo 6
+### Aula 05 -  - Vídeo 7
