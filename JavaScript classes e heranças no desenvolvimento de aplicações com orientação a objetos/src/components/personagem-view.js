@@ -11,6 +11,7 @@ export default class PersonagemView {
         this.personagensSelecionados = personagensSelecionados;
         this.escutarEventoDuelo();
     };
+    //--------------------------------------------------------------------------
     render() {
         this.ulPersonagens.innerHTML = '';
         this.personagens.forEach(personagem => {
@@ -54,13 +55,15 @@ export default class PersonagemView {
                 <h4 class="mana">${personagem.mana}</h4>
                 <h4 class="vida">${personagem.vida}</h4>
             </div>`;
-        /*const containerLevel = personagemLI.querySelector('.level')
+        //--------------------------------------------------------------------------------------
+        const containerLevel = personagemLI.querySelector('.level')
         containerLevel.onclick = (evt) => {
             evt.stopPropagation()
             if (evt.target.classList.contains('diminuir-level')) personagem.diminuirLevel()
             if (evt.target.classList.contains('aumentar-level')) personagem.aumentarLevel()
             this.render()
-        }*/
+        };
+        //--------------------------------------------------------------------------------------
         personagemLI.onclick = () => {
             const jaTem2Selecionados = this.personagensSelecionados.length === 2;
             if (!jaTem2Selecionados || estaSelecionado) {
@@ -71,6 +74,7 @@ export default class PersonagemView {
         };
         return personagemLI;
     };
+    //--------------------------------------------------------------------------------------
     adicionaSelecao = (personagem) => {
         this.personagensSelecionados.push(personagem)
         this.render()

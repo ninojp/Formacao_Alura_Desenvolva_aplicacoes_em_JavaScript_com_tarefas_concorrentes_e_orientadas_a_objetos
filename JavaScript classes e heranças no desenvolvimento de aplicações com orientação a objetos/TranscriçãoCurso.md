@@ -1732,10 +1732,356 @@ Nessa aula, você aprendeu como:
 
 ## Aula 05 - Encapsulamento
 
-### Aula 05 -  - Vídeo 1
-### Aula 05 -  - Vídeo 2
-### Aula 05 -  - Vídeo 3
-### Aula 05 -  - Vídeo 4
-### Aula 05 -  - Vídeo 5
-### Aula 05 -  - Vídeo 6
-### Aula 05 -  - Vídeo 7
+### Aula 05 - Projeto da aula anterior
+
+Caso queira revisar o código até aqui ou começar a partir desse ponto, disponibilizamos os códigos realizados na aula anterior para [baixar nesse link](https://github.com/alura-cursos/cartas-personagens/archive/refs/heads/aula-4.zip) ou veja nosso [repositório do Github](https://github.com/alura-cursos/cartas-personagens/tree/aula-4).
+
+### Aula 05 - Propriedades privadas - Vídeo 1
+
+Transcrição  
+Observação: A instrutora Nay vai apresentar essa aula
+
+Nessa aula vamos direcionar nossa atenção para um atributo muito importante da classe personagem: o level. Ele é tão importante porque seu valor interfere diretamente nos métodos da classe, ou seja, no obterInsignia e no verificarVencedor.
+
+Trazendo para o contexto do mundo real, um atributo bem importante no setor bancário seria uma propriedade com o valor do saldo de um cliente ou uma cliente. Isso porque o valor do saldo influencia diretamente em várias funcionalidades como sacar, transferir e realizar pagamentos. Esse tipo de propriedade que é sensível precisa estar protegida. Vamos entender como.
+
+Abriremos o "index.js" e, na linha 89, notamos que o arqueiroBruno foi instanciado com o valor de level 7. Agora, na linha 12, digitaremos:
+
+```JavaScript
+arqueiroBruno.level = 15
+```
+
+Quando voltamos na aplicação, ao observamos o canto superior direito da carta do Arqueiro Bruno, notamos que ele está com o nível 15. Então temos um problema, porque qualquer pessoa pode atribuir um novo valor a essa propriedade.
+
+Pare resolvermos isso, vamos voltar ao arquivo "personagem.js" e no começo da linha 5, onde codamos o atributo level fora do construtor, escreveremos o símbolo de cerquilha, hash ou jogo da velha (#), como preferir chamar antes dele, ou seja, #level.
+
+```JavaScript
+export class Personagem {
+    nome
+    vida = 100
+    mana = 100
+    #level
+    tipo
+    descricao
+
+//código omitido
+```
+
+Dentro do construtor, na linha 11, também vamos codar a cerquilha antes do primeiro level:
+
+```JavaScript
+//código omitido
+    constructor(nome) {
+        this.nome = nome
+        this.#level = level
+//código omitido
+```
+
+Por fim, também adicionaremos no level da linha 15, dentro de obterInsignia():
+
+```JavaScript
+    obterInsignia() {
+        if (this.#level >= 5) {
+            return `Implacavel ${this.constructor.tipo}`
+        }
+        return `${this.constructor.tipo} iniciante`
+    }
+```
+
+Agora acessaremos o arquivo "index.js" e na linha 12 vamos adicionar a cerquilha antes do level também:
+
+```JavaScript
+arqueiroBruno.#level = 15
+```
+
+Quando fazemos isso, o #level fica com um sublinhado vermelho. Ao deixarmos o cursor do mouse sobre a propriedade aparece uma caixa de texto informando que "#level" não é acessível fora da classe personagem, porque possui um identificador privado. Portanto é vetado a atribuição de um novo valor a essa propriedade.
+
+O que acontece é que as propriedades de uma classe são públicas por padrão, mas podemos deixar um método ou uma propriedade privados, adicionando a cerquilha (#). Com isso resolvemos um problema comum, que é o de impedir que as propriedades fiquem vulneráveis. Essa dinâmica na programação orientada a objetos se chama encapsulamento.
+
+Vamos comentar a linha 12 codando duas barras no começo da linha, ou seja, //arqueiroBruno.#level = 15. Ao abrirmos o navegador, notamos no canto superior direito das cartas, onde o nível deveria se renderizado, está escrito "Level undefined".
+
+Retornando ao arquivo "index.js" no VS Code, vamos comentara linha 17 e, na linha 18, vamos codar um console.log(arqueiroBruno).
+
+```JavaScript
+//código omitido
+
+//console.log(Personagem.verificarVencedor(arqueiroBruno, magoAntonio))
+console.log(arqueiroBruno)
+```
+
+Quando abrimos o console do navegador, reparamos que a informação "#level: 7" está aparecendo, ou seja, todos os personagens ainda possuem o level, mas essa informação ainda não está disponível fora da classe. Por conta disso, ele não ficou acessível para PersonagemView().
+
+Nosso próximo passo é ajustas a view ao nosso modelo.
+
+### Aula 05 - Para saber mais: atributos privados com _
+
+Você sabia que antigamente não existiam propriedades privadas?
+
+A sintaxe utilizando hashtag # é uma nova implementação do JavaScript, antigamente quando a pessoa desenvolvedora queria sinalizar que aquela propriedade não deveria ser acessada, era feito com o prefixo _ antes do nome do atributo. Mas isso era meramente uma convenção, a propriedade não estava privada de fato.
+
+Caso você queira ler mais sobre isso, recomendo esse [para saber mais](https://cursos.alura.com.br/course/javascript-passos-programacao-orientada-objetos/task/103425) escrito pela instrutora Juliana Amoasei no [Curso de JavaScript: programação orientada a objetos](https://cursos.alura.com.br/course/javascript-passos-programacao-orientada-objetos) da escola de back-end, que fala justamente dessa convenção utilizada.
+
+### Aula 05 - Getter - Vídeo 2
+
+Transcrição  
+Nós aprendemos que ao protegermos a propriedade level, alguns problemas apareceram. Como essa propriedade não é mais acessível fora da classe, a PersonagemView() acaba tendo dificuldades em desempenhar seu papel na renderização, e como resultado tivemos o "undefined".
+
+Agora descobriremos como deixar a propriedade level protegida, mas ainda deixá-la acessível para uso em determinadas funcionalidades externas à classe personagem. Para isso, voltaremos ao VS Code no arquivo "personagem.js".
+
+Após o fechamento de chaves (}) do constructor, na linha 12, vamos pressionar "Enter" duas vezes e, a partir da linha 14, escreveremos:
+
+```JavaScript
+get level() {
+    return this.#level
+}
+```
+
+Ao voltarmos para página do navegador com a nossa aplicação, reparamos que o valor do nível voltou a aparecer no canto superior direito da carta. A função do get está funcionando.
+
+O get associa a propriedade de um objeto a uma função. Então o level, que está sendo definido na linha 11, dentro do constuctor, foi associado à função get level() na linha 14. Essa função é chamada quando a propriedade é acessada.
+
+Então quando a classe PersonagemView() solicita o level do arqueiroBruno, por exemplo, ela automaticamente chama a função get level(), que retorna o #level desse personagem, que está privado. Assim o nível volta a ser renderizado.
+
+O level está sendo definido no construtor, mas ao voltarmos para a página da aplicação, que eu vou ampliar para vermos melhor, notem que existem dois botões ao lado da informação do level. Um botão tem o sinal de adição (+) à direita e outro tem o sinal de subtração (-) à esquerda do "Level".
+
+Por enquanto eles não funcionam, mas resolveremos isso em breve. Contudo, se usaremos botões para modificar o level, não faz sentido ele estar sendo pedido no construtor. Sendo assim, faremos algumas modificações.
+
+No arquivo "personagem.js" vamos remover o level de dentro dos parâmetros do constructor(), na linha 9. Além disso, na linha 11, ao invés de level, passaremos "1".
+
+```JavaScript
+//código omitido
+
+    constructor(nome) {
+        this.nome = nome
+        this.#level = 1
+    }
+```
+
+Vamos abri o Explorador, que é o menu lateral à esquerda, para acessarmos as demais classes para fazer essa mesma modificação no costructor. Então acessaremos o arquivo "arqueiro-mago.js" e vamos apagar o level das linhas 11 a 14.
+
+```JavaScript
+//código omitido
+
+    constructor(nome, destreza, elementoMagico, levelMagico, inteligencia) {
+        super(nome)
+        this.ladoArqueiro = new Arqueiro(nome, destreza)
+        this.ladoMago = new Mago(nome, elementoMagico, levelMagico, inteligencia)
+    }
+```
+
+Depois, no arquivo "arqueiro.js" apagaremos o level das linhas 8 e 9.
+
+```JavaScript
+//código omitido
+
+    constructor(nome, destreza) {
+        super(nome)
+        this.destreza = destreza
+    }
+```
+
+Por fim, vamos abrir o arquivo 'mago.js" para deletar o level da linha 10 e 11.
+
+```JavaScript
+//código omitido
+    constructor(nome, elementoMagico, levelMagico, inteligencia) {
+        super(nome)
+        this.elementoMagico = elementoMagico
+        this.levelMagico = levelMagico
+        this.inteligencia = inteligencia
+    }
+```
+
+Vamos fechar esses arquivos e voltar para o "personagem.js". Também abriremos a aplicação novamente, onde vou reduzir a tela, e vocês notarão que no canto superior direito das três cartas de personagem está escrito "Level 1".
+
+Agora sem os construtores, os parâmetros que eram passados antes não são mais utilizados. E como atribuímos o this.#level = 1 no construtor do "personagem.js", esse é o nível de todos os personagens agora. Portanto podemos dizer que os personagens do D&D estão no começo do jogo, com nível 1.
+
+O próximo passo é fazer os botões de mais (+) e menos (-) ao redor do "Level" funcionarem, dando início à movimentação do jogo.
+
+### Aula 05 - Desafio: Classe Guerreiro
+
+Agora é com você!  
+Chegou o momento unir tudo que aprendeu ao longo desse curso e aplicar na criação de uma última classe, a classe do Guerreiro!
+
+alt text: carta de um guerreiro na cor vermelha, símbolo de espada, com o level 8, nome Jorge, descrição com o texto Você será esmagado pela fúria do Guerreiro!vida e mana com 100 e insígnia de Guerreiro furioso
+
+Essa classe, diferentemente das outras, usará o level dentro da sua lógica da obterInsignia(), e por isso, ela só foi possível ser criada após a implementação do acessor get em Personagem.
+
+Como essa será sua última tarefa de desafio, a classe Guerreiro não é um pré-requisito para dar continuidade aos estudos, é apenas uma maneira de praticar o que você viu até aqui.
+
+E por isso eu gostaria de enfatizar que a minha sugestão é a criação dessa classe, mas você pode criar outro tipo de personagem além do guerreiro, com suas próprias características no CSS e renderizar na página vários objetos para completar seu tabuleiro do jogo com cartas como druidas, elfos, paladinos, dragões e o que mais você quiser, eu irei adorar ver como ficou!
+
+Instruções do desafio
+
+- A classe Guerreiro irá herdar a classe Personagem.
+- Irá possuir duas propriedades estáticas, o tipo (tipo = 'Guerreiro') e a descricao, sugestão de texto: 'Você será esmagado pela fúria do Guerreiro!'.
+- Além dessas duas, também terá a propriedade forca.
+- Não esqueça de utilizar o this e colocar nos parâmetros do constructor e do super as propriedades envolvidas.
+- Por último, a obterInsignia() para a classe Guerreiro terá um comportamento diferente, aqui nós gostaríamos que caso o level seja maior ou igual a 7 e a força seja maior ou igual a 5, retorne Guerreiro furioso. Caso não caia nessa lógica, será a mesma situação que vimos nas classes anteriormente, irá dar um return super.obterInsignia();.
+
+Opinião do instrutor
+
+PASSO 1  
+É necessário criar o arquivo da classe, então dentro da pasta modules, eu crio o arquivo chamado guerreiro.js.
+
+PASSO 2  
+Para realizar esse desafio, será necessário utilizar o export, import, extends, static, constructor, super, this e muito mais! O código final é:
+
+```JavaScript
+import { Personagem } from "./personagem.js";
+
+export class Guerreiro extends Personagem {
+    static tipo = 'Guerreiro'
+    static descricao = 'Você será esmagado pela fúria do Guerreiro!'
+    forca
+    constructor(nome, forca) {
+        super(nome);
+        this.forca = forca
+    }
+    obterInsignia() {
+        if (this.level >= 7 && this.forca >= 5)
+            return `Guerreiro furioso`
+
+        return super.obterInsignia();
+    }
+}
+```
+
+Bora ver como ficou?
+
+Para isso, vou criar uma instância e renderizar na página, você pode criar essa instância à sua maneira.
+
+No index.js, fica:
+
+```JavaScript
+import { Guerreiro } from "./modules/guerreiro.js"
+
+const guerreiraJorge = new Guerreiro('Jorge', 8)
+const personagens = [magoAntonio, magaJulia, arqueiroBruno, arqueiroMagoChico, guerreiraJorge]
+```
+
+A carta do Guerreiro foi renderizada com as características descritas para essa classe no CSS!
+
+### Aula 05 - Setter - Vídeo 3
+
+Transcrição  
+Vimos que no projeto D&D temos dois botões ao lado do Level: um à esquerda com o ícone "-" que diminui o level, e um à direita com o ícone "+" que o aumenta. Eles não funcionam, já que os métodos que realizarão essa função ainda não foram criados. Vamos criá-los.
+
+Criando os métodos aumentarLevel() e diminuirLevel()
+Retornando ao VS Code, acessaremos o arquivo personagem-view.js. Nele, removeremos os comentários da linha const containerLevel até o fechamento de chaves de containerLever.onclick = (evt) => {}.
+
+```JavaScript
+        const containerLevel = personagemLI.querySelector('.level')
+        containerLevel.onclick = (evt) => {
+            evt.stopPropagation()
+            if (evt.target.classList.contains('diminuir-level')) personagem.diminuirLevel()
+
+            if (evt.target.classList.contains('aumentar-level')) personagem.aumentarLevel()
+
+            this.render()
+        }
+```
+
+Este método implementa a lógica dos métodos de diminuirLevel() e aumentarLevel() — os quais criaremos logo em seguida — e chama a função render() para atualizar o valor do novo level na página.
+
+Fecharemos o arquivo personagem-view.js e acessaremos o personagem.js. Duas linhas abaixo do constructor criaremos o método aumentarLevel() seguido de um bloco de chaves. Dentro do bloco digitaremos this.#level += 1. Abaixo desse bloco pularemos uma linha, criaremos o método diminuirLevel() e abriremos outro bloco de chaves. Dentro dele digitaremos this.#level -= 1.
+
+```JavaScript
+    constructor(nome) {
+
+/* Código omitido */
+
+    }
+
+    aumentarLevel() {
+        this.#level += 1
+    }
+
+    diminuir Level() {
+        `this.#level -= 1`
+    }
+```
+
+Voltaremos à aplicação aberta no navegador para testar. Quando clicamos no botão "+", o level aumenta, e quando clicamos no botão "-", o level diminui. Não há limite de números — se continuarmos aumentando, o level subirá infinitamente. Já se continuarmos diminuindo, ele adquirirá valores negativos infinitamente.
+
+E se quiséssemos criar uma regra para limitar esses valores? Voltaremos ao arquivo personagem.js no VS Code. Duas linhas abaixo do bloco de chaves do método get level() criaremos o método set level () com o parâmetro novoLevel entre seus parênteses, seguido de um bloco de chaves, dentro do qual faremos uma verificação conforme abaixo.
+
+```JavaScript
+if(novoLevel >= 1 && novoLevel <= 10) {
+    this.#level = novoLevel
+}
+```
+
+Dessa forma o valor do novo level será limitado entre 1 e 10.
+
+```JavaScript
+get level() {
+
+/* Código omitido */
+
+    }
+
+set level() {
+    if(novoLevel >= 1 && novoLevel <= 10) {
+        this.#level = novoLevel
+}
+}
+```
+
+Removeremos o sinal # dos métodos aumentarLevel() e diminuirLevel().
+
+```JavaScript
+    aumentarLevel() {
+        this.level += 1
+    }
+
+    diminuir Level() {
+        `this.level -= 1`
+    }
+```
+
+Vamos testar o código voltando ao navegador. Quando clicamos no botão "+", o level aumenta somente até o valor 10. Quando clicamos no botão "-", por sua vez, o level diminui somente até 1.
+
+Vamos entender o código?  
+Já fomos apresentados ao get, agora estamos conhecendo o seu par: o set. Eles não são dependentes, mas os vemos com frequência sendo utilizados em conjunto.
+
+Enquanto o get é utilizado para retornar o valor de um propriedade protegida que está sendo acessada fora da classe, o set serve para criar uma lógica de negócio onde há a necessidade de alterar o valor de uma propriedade privada — justamente o que está acontecendo nos métodos aumentarLevel() e diminuirLevel().
+
+O set verifica o valor de novoLevel, e a cada tentativa de modificação atribuímos o seu valor ao this.level. O get level() é chamado diretamente pela classe PersonagemView quando tenta acessar o level para realizar a renderização. O set level() também é chamado pela PersonagemView, mas de forma indireta. Na verdade, quem chama essa função são os métodos aumentarLevel() e diminuirLevel().
+
+Este foi o motivo de termos retirado o sinal # dos métodos. Para chamarmos o método set level(), a chamada precisa ter o mesmo nome da função — ou seja, level.
+
+O projeto D&D está oficialmente finalizado! Ele é totalmente personalizável — você pode criar quantos personagens quiser e montar o seu próprio tabuleiro.
+
+Fique à vontade para estilizá-lo da forma como preferir e compartilhar conosco as suas invenções. Adoraremos ver a sua evolução!
+
+### Aula 05 - Para saber mais: resumindo, o que é encapsulamento?
+
+O encapsulamento é um dos grandes pilares da orientação a objetos!  
+O maior objetivo de uso do encapsulamento é proteger informações sigilosas ou sensíveis de uma aplicação, isso evita que haja acessos indevidos.
+
+Para conseguir isso, no encapsulamento é utilizado mecanismos, como o get e o set por exemplo, e é construído uma estrutura lógica que contém métodos que podem ser utilizados por qualquer outra classe, sem causar inconsistências.
+
+O getter retorna o valor que foi pedido, mas de forma a não prejudicar a integridade do dado em si. Já o setter recebe como argumento uma informação, que pode ser qualquer tipo de dado suportado pela linguagem.
+
+Dominar esse conceito é fundamental, uma vez que com ele é possível deixar o código mais legível, funcional e reutilizável.
+
+### Aula 05 - O que aprendemos?
+
+Nessa aula, você aprendeu como:
+
+- Utilizar encapsulamento e criar propriedades privadas;
+- Criar o método get para retornar o valor de uma propriedade privada;
+- Empregar o método set para alterar o valor de uma propriedade privada.
+- Aqui você pode baixar o projeto final do curso ou acessar nosso repositório do Github!
+
+### Aula 05 - Conclusão - Vídeo 4
+
+Transcrição  
+Parabéns pela conclusão do curso! Você deu um passo importante na carreira de pessoa desenvolvedora ao aprender sobre o Paradigma Orientado a Objetos.
+
+Utilizar classes e conceitos como herança, encapsulamento e polimorfismo te ajudará a resolver muitos desafios.
+
+Queremos te pedir para compartilhar conosco a sua experiência de aprendizado, já que aqui na Alura buscamos melhorar continuamente.
+
+Até o próximo mergulho!

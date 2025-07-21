@@ -1,6 +1,7 @@
 'use strict';
 import Arqueiro from "../modules/Arqueiro.js";
 import ArqueiroMago from "../modules/ArqueiroMago.js";
+import Guerreiro from "../modules/Guerreiro.js";
 import Mago from "../modules/Mago.js";
 import Personagem from "../modules/Personagem.js";
 import PersonagemView from "./components/personagem-view.js";
@@ -21,12 +22,22 @@ import PersonagemView from "./components/personagem-view.js";
 // console.log(new Mago('gelo', 7, 9));
 const magoNino = new Mago('Nino', 2, 'Fogo', 3, 4);
 const magaGabi = new Mago('Gabi', 8, 'Gelo', 9, 8);
-const arqueiroBruno = new Arqueiro('Bruno', 6, 5)
+const arqueiroBruno = new Arqueiro('Bruno', 6, 5);
 const arqueiroMagoChico = new ArqueiroMago('Chico', 7, 10, 'Fogo', 6, 8);
-const personagens = [magoNino, magaGabi, arqueiroBruno, arqueiroMagoChico];
+const guerreiroJoao = new Guerreiro('João', 7);
+//Encapsulamento: O uso do #antes do nome da propriedade a torna privada.
+// console.log('Antes...', arqueiroBruno.level);
+// O uso de #level impede o acesso direto à propriedade level fora da classe.
+// arqueiroBruno.#level = 15 //Erro: Cannot assign to read only property '#level' of object '#<Arqueiro>'
+// Após a atribuição #, level já não mais existe como propriedade pública.
+//Então aqui será CRIADO uma nova propriedade level, que não é a mesma de #level.
+// arqueiroBruno.level = 15
+// console.log('Depois...', arqueiroBruno.level);
+
+const personagens = [magoNino, magaGabi, arqueiroBruno, arqueiroMagoChico, guerreiroJoao];
 new PersonagemView(personagens).render();
 
-console.log(Personagem.verificarVencedor(magoNino, magaGabi));
+// console.log(Personagem.verificarVencedor(magoNino, magaGabi));
 
 //============================================================================================
 //Útil para inspecionar métodos estáticos, propriedades da classe e o próprio construtor.
