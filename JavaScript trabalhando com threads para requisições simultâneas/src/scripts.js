@@ -13,10 +13,25 @@ const graficoParaDolar = new Chart(graficoDolar, {
         }]
     }
 });
+//========================================================================================
 
 async function conectaAPI() {
     const conecta = await fetch("https://economia.awesomeapi.com.br/json/last/USD-BRL");
     const conectaTraduzido = await conecta.json();
     console.log(conectaTraduzido);
 }
-conectaAPI();
+// conectaAPI();
+setInterval(() => conectaAPI(), 5000)
+//===============================================================================================================
+
+function gerarHorario() {
+    let dataHoraAtual = new Date();
+    let horario = dataHoraAtual.getHours() + ":" + dataHoraAtual.getMinutes() + ":" + dataHoraAtual.getSeconds();
+    let horaAtual = `${dataHoraAtual.getHours()}h:${dataHoraAtual.getMinutes()}m:${dataHoraAtual.getSeconds()}s`;
+    let dataAtual = `${dataHoraAtual.getDay()}/${dataHoraAtual.getMonth()}/${dataHoraAtual.getFullYear()}`;
+    console.log(horario);
+    console.log(horaAtual);
+    console.log(dataAtual);
+    
+};
+gerarHorario();

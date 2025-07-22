@@ -392,14 +392,16 @@ Se analisarmos a nossa página, veremos na seção Dashboard um gráfico com o t
 
 Voltaremos ao VS Code, onde acessaremos o interior do arquivo script.js. Abaixo da function conectaAPI() encontraremos a linha em que chamamos a conectaAPI(). Vamos apagar chamada e substituí-la por um setInterval(), que receberá entre parênteses a função () => conectaAPI() e o valor 5000, ambos separados por vírgula.
 
-
+```JavaScript
 async function conectaAPI() {
 
 // Código omitido
 
 }
 
-setInterval(() => conectaAPI(), 5000)Copiar código
+setInterval(() => conectaAPI(), 5000)
+```
+a
 Retornaremos ao nosso servidor local, onde abriremos a aba do console pressionando "F12". Nele podemos ver que a cada 5 segundos temos o retorno abaixo.
 
 {USDBRL: {…}}
@@ -412,10 +414,135 @@ O que aconteceria se colocássemos mais elementos após o setInterval()? O códi
 
 A seguir, entenderemos como funciona a leitura do Javascript e como funciona a assincronicidade que vimos anteriormente. Uniremos estes conceitos para entender o funcionamento desta linguagem de programação. Até o próximo vídeo.
 
-### Aula 2 -  - Vídeo 2
-### Aula 2 -  - Vídeo 3
-### Aula 2 -  - Vídeo 4
-### Aula 2 -  - Vídeo 5
-### Aula 2 -  - Vídeo 6
-### Aula 2 -  - Vídeo 7
-### Aula 2 -  - Vídeo 8
+### Aula 2 - Execução do código - Exercício
+
+Observe o trecho de código a seguir:
+
+```JavaScript
+setTimeOut(interageUsuario, 5000)
+console.log(“Hello, World!”)
+
+function interageUsuario() {
+console.log(“Boas vindas ao meu código!")
+}
+
+console.log(“Meu nome é Moni!”)
+```
+
+Sabendo que o método setTimeOut chama uma função após alguns milissegundos, o que será impresso no console?
+
+Resposta:
+
+- Hello, World!
+- Meu nome é Moni!
+- Boas vindas ao meu código!
+
+> Apesar da função ser chamada na primeira linha, ela demora alguns segundos para ser executada e esse tempo é o suficiente para realizar a leitura dos outros console.log.
+
+### Aula 2 - Event Loop - Vídeo 2
+
+Transcrição  
+Chamamos a conectaAPI depois da construção da função. Faz sentido, já que não podemos chamar algo que ainda não foi construído.
+
+Mesmo assim, testaremos essa lógica: vamos chamar a conectaAPI() antes da sua declaração. Para isso, retornaremos ao VS Code, no arquivo scripts.js. Em seu interior, recortaremos a linha setInterval(() => conectaAPI(), 5000) e a colaremos acima da async function conectaAPI()
+
+```JavaScript
+setInterval(() => conectaAPI(), 5000)
+async function conectaAPI() {
+
+// Código omitido
+
+}
+```
+
+Retornaremos ao servidor local, onde abriremos o console com o "F12". Nele veremos que as requisições ocorrem normalmente.
+
+Por que isso ocorre? Para conseguirmos a resposta precisamos entender como o Javascript lê o código.
+
+O Javascript consegue ler as tarefas e executá-las em ordem diferente. Isto é o que chamamos de Modelo de concorrência. No Javascript, este modelo é baseado em um Event Loop (ou Laço de Eventos) que empilha e determina a ordem de execução das tarefas, empilhando-as.
+
+Assim como criamos o setInterval() que roda um comando várias vezes em um determinado intervalo de tempo, criamos também uma função assíncrona para a requisição da API.
+
+Para onde vão esses comandos que demoram um pouco mais para acontecer? Eles travam o código?
+
+Na verdade, eles vão para um local chamado Task Queue (ou Fila de Tarefas).
+
+Podemos separar a execução do código Javascript em três etapas: Task Queue, Event Loop e Call Stack (ou Pilha de Chamadas).
+
+O Event Loop passa pelo código, empilhando dentro da Call Stack os comandos a serem executados. Estes, por sua vez, serão executados um por vez. Quando o Event Loop detecta que algum comando demorará para acontecer, ele o envia para a Task Queue, onde este ficará em modo de espera. No momento de sua ativação, o comando voltará para a Call Stack.
+
+Com isso, podemos determinar que as ações não ocorrem simultaneamente, mas sim em uma ordem definida pelo Event Loop — mesmo que não seja a ordem escrita no nosso código.
+
+Agora que entendemos um pouco do que acontece em nosso código, daremos andamento no projeto e realizaremos outras etapas. A próxima etapa será determinar a hora e a data da requisição para inserir estes dados futuramente no gráfico.
+
+Até o próximo vídeo.
+
+### Aula 2 - Para saber mais: leitura de código
+
+O JavaScript possui um modelo de concorrência baseado em um event loop (laço de eventos, em português), responsável pela execução do código, coleta e processamento de eventos e execução de subtarefas enfileiradas.
+
+Apesar de executar tarefas em ordens diferentes, por padrão o JavaScript funciona de modo síncrono, onde o event loop executa as tarefas que ficam na call stack linha a linha. Algumas funções podem demorar para executar ou possuem um tempo especificado para acontecer, e pra isso temos o auxílio da task queue para não impedir a leitura do código, tornando o código assíncrono.
+
+Abaixo você pode conferir um glossário com a explicação de cada um desses termos técnicos citados:
+
+Termo - Significado  
+Concorrência - Um programa é concorrente quando é composto de tarefas que podem ser executadas em ordens diferentes.
+Event Loop - É um ciclo que monitora e executa as ações que mandamos para o JavaScript. O processo de leitura do código só é finalizado quando não existem mais ações a serem executadas.
+Task Queue - A fila de tarefas assíncronas.
+Call Stack - É um mecanismo que organiza como irá funcionar o script quando existem muitas funções: qual função está sendo executada, quais estão sendo chamadas dentro de alguma função, etc.
+
+Você pode descobrir mais sobre assincronicidade no Javascript com o [curso JavaScript: consumindo e tratando dados de uma API](https://cursos.alura.com.br/course/javascript-consumindo-tratando-dados-api), ministrado pela Rafaela Silvério, onde aprendemos passo a passo de como consumir uma API, nos aventurando por vários termos técnicos que nos ajudam entender como as requisições funcionam.
+
+### Aula 2 - Obejeto Date - Vídeo 3
+
+Transcrição  
+Se abrirmos o Figma do projeto veremos que o gráfico é composto de duas informações: o valor da cotação da moeda e a hora em que a cotação foi retornada.
+
+Voltaremos ao arquivo scripts.js aberto no VS Code. Para trabalharmos com datas e horários, criaremos no final desse arquivo a função geraHorario() com H maiúsculo, seguido de um bloco de chaves, cujo interior receberá um let data = new Date() e um console.log(data) ambos em linhas separadas.
+
+Abaixo das chaves, chamaremos a função recém-criada.
+
+```JavaScript
+function geraHorario() {
+    let data = new Date();
+    console.log(data)
+}
+geraHorario();
+```
+
+Salvaremos o código e retornaremos ao navegador, onde abriremos novamente o console e veremos um retorno com o dia da semana, o mês, o dia, o ano e o horário. Sempre que houver a necessidade de recuperar a data do projeto, podemos contar com o new Date().
+
+Neste projeto, precisamos somente do horário. Voltando ao VS Code, removeremos o console.log(data) e em seu lugar adicionaremos um let horario = data.getHours() + ":" + data.getMinutes() + ":" + data.getSeconds().
+
+Abaixo dessa linha daremos um console.log(horario). Abaixo deste, por sua vez, adicionaremos um return horario, já que precisaremos desse valor quando chamarmos a função.
+
+```JavaScript
+function geraHorario() {
+    let data = new Date();
+    let horario = data.getHours() + ":" + data.getMinutes() + ":" + data.getSeconds();
+    console.log(horario);
+    return horario;
+}
+
+geraHorario();
+```
+
+Voltaremos ao navegador para ver se isso funcionou. Agora vemos no console somente o horário no formato que configuramos: "horas:minutos:segundos".
+
+Já temos as informações da requisição recuperadas e a informação da hora. Ou seja, temos todos os valores necessários para incluir e alimentar o gráfico.
+
+Na próxima aula, chegaremos na etapa de inclusão dos valores. Até logo!
+
+### Aula 2 - O que aprendemos?
+
+Nessa aula, você aprendeu como:
+
+- Executar uma função a cada determinado tempo através do setInterval;
+- Identificar o modelo de concorrência;
+- Compreender a execução do código JavaScript;
+- Distinguir os papéis do Event Loop, Call Stack e Task Queue;
+- Capturar datas e horas com o objeto Date.
+
+## Aula 3 - 
+
+### Aula 3 -  - Vídeo 6
