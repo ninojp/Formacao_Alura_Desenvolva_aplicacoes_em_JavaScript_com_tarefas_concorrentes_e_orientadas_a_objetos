@@ -543,6 +543,289 @@ Nessa aula, você aprendeu como:
 - Distinguir os papéis do Event Loop, Call Stack e Task Queue;
 - Capturar datas e horas com o objeto Date.
 
-## Aula 3 - 
+## Aula 3 - Trabalhando com Single Thread
 
-### Aula 3 -  - Vídeo 6
+### Aula 3 - Projeto da aula anterior
+
+Caso queira revisar o código até aqui ou começar a partir desse ponto, disponibilizamos os códigos realizados na aula anterior para [baixar nesse link](https://github.com/alura-cursos/bytebank-javascript/archive/refs/heads/aula02.zip) ou veja nosso [repositório do Github](https://github.com/alura-cursos/bytebank-javascript/tree/aula02).
+
+### Aula 3 - Dados dinâmicos - Vídeo 1
+
+Transcrição  
+Já temos uma função que capta a cotação de uma moeda específica e outra para capturar o horário em que o trecho de código foi executado.
+
+Agora, iremos unir as informações para transformar o gráfico em dinâmico.
+
+Quando usamos bibliotecas, é comum termos tutoriais para tudo o que precisarmos em sua documentação. Por exemplo, se entrarmos no site de Chart.js neste link e clicarmos no botão de "Get Started" ou "Começar" em português, acessaremos essa documentação.
+
+Na barra de pesquisa no topo à direita da tela, escreveremos "update" em inglês, que significa "atualizando". Acessando a página de "Updating Charts", encontraremos um tutorial de como adicionar e remover dados do gráfico no exemplo de título "Adding or Removing Data".
+
+Porém, como está em inglês, poderemos usar alguma extensão que traduza para entendermos melhor. O exemplo está com uma função padronizada para o tutorial do site, e queremos adaptar ao nosso projeto.
+
+Para isso, abriremos o VSCode no arquivo scripts.js dentro de "script" e apagaremos a chamada da função geraHorario(), substituindo por function adicionarDados() recebendo grafico, legenda, dados.
+
+Dentro das chaves do bloco, chamaremos grafico.data.labels.push() com legenda entre os parênteses.
+
+```JavaScript
+const graficoDolar = document.getElementById('graficoDolar');
+
+const graficoParaDolar = new Chart(graficoDolar, {
+    type: 'line',
+    data: {
+        labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
+        datasets: [{
+            label: '# of Votes',
+            data: [12, 19, 3, 5, 2, 3],
+            borderWidth: 1
+        }]
+    },
+});
+//código omitido
+function adicionarDados(grafico, legenda, dados) {
+    grafico.data.labels.push(legenda);
+```
+
+Com isso, criamos a função adicionarDados() que recebe como parâmetro o grafico que construímos, a legenda contendo a hora em que a requisição foi feita, e os dados que serão o valor da moeda em si.
+
+Dentro disso, pegamos o gráfico que criamos e, na linha em que criamos o gráfico com graficoParaDolar, entramos dentro de data: que é o gráfico, e dentro teremos labels que se traduz como "legenda".
+
+Então acessamos este valor labels: e aplicamos o método .push() que pegará a lista e inserirá um valor no final.
+
+Já temos alguns valores que vieram por padrão do Chart.js, então apagaremos e deixaremos os colchetes de labels: em branco. Com isso, poderemos prosseguir com a adicionarDados() inserindo outros dados como aconteceu na moeda em si.
+
+Para isso, na segunda linha do bloco da função, escreveremos grafico.data.datasets.forEach() recebendo (dataset) seguido da arrow function e abertura das chaves. Dentro de {}, colocaremos dataset.data.push() com dados.
+
+Neste caso, é semelhante também. Iremos ao nosso gráfico em graficoParaDolas, entraremos em data:, depois em datasets: e, dentro dele, teremos label:, data: e borderWidth:.
+
+Queremos acessar o segundo, por isso escrevemos dataset.data, seguido do .push() para inserir os novos valores que enviarmos à função adicionarDados() para ir ao final da lista e acrescentar.
+
+Porém, data: já está com valores e iremos remover todos que estão entre os colchetes. Já em label:, apagaremos o '# of Votes' e deixaremos apenas 'Dolar'.
+
+Por fim, teremos que atualizar. De volta à documentação de "Adding or Removing Data", o exemplo nos indica o uso de chart.update(), que é uma função para atualizar o gráfico.
+
+De volta ao código, escreveremos grafico.update() ao final. Com isso, teremos uma maneira de receber os dados e atualizar o gráfico.
+
+Vamos usar essa função para a atualização funcionar corretamente.
+
+Dentro da conectaAPI(), retiraremos o console.log() de conectaTraduzido e substituiremos por let tempo igual a geraHorario() e, na linha seguinte, let valor será igual a conectaTraduzido.USDBRL.ask.
+
+Em seguida, chamaremos a função de adicioanrDados() enviando os valores graficoParaDolar, tempo, valor como parâmetros entre parênteses.
+
+```JavaScript
+const graficoDolar = document.getElementById('graficoDolar');
+
+const graficoParaDolar = new Chart(graficoDolar, {
+    type: 'line',
+    data: {
+        labels: [],
+        datasets: [{
+            label: 'Dólar',
+            data: [],
+            borderWidth: 1
+        }]
+    },
+});
+setInterval(() => conectaAPI(), 5000);
+async function conectaAPI() {
+    const conecta = await fetch("https://economia.awesomeapi.com.br/json/last/USD-BRL");
+    const conectaTraduzido = await conecta.json();
+    let tempo = geraHorario();
+    let valor = conectaTraduzido.USDBRL.ask;
+    adicionarDados(graficoParaDolar, tempo, valor);
+}
+
+function geraHorario() {
+    let data = new Date();
+    let horario = data.getHours() + ":" + data.getMinutes() + ":" + data.getSeconds();
+    console.log(horario);
+    return horario;
+}
+
+function adicionarDados(grafico, legenda, dados) {
+    grafico.data.labels.push(legenda);
+    grafico.data.datasets.forEach((dataset) => {
+        dataset.data.push(dados);
+    })
+    grafico.update();
+}
+```
+
+Vamos visualizar o projeto para entender o que está acontecendo.
+
+A cada cinco segundos, iremos fazer uma requisição, então precisaremos esperar. Passado o tempo, o gráfico nos informará que a certo horário, o dólar estava com um valor específico.
+
+Depois de cinco segundos, fará uma outra requisição, e assim por diante. Portanto, nosso gráfico está atualizando em tempo real.
+
+Em nosso código, colocamos o setInterval() para que conecte a API e rode a cada cinco segundos. Depois fazemos a requisição e colocamos o valor final de conectaTraduzido.USDBRL.ask para acessarmos o valor dentro do objeto referente à .ask, colocando na variável valor.
+
+Na variável tempo que recebe a função que faz o tempo, então já pegou o tempo de requisição e o valor, depois envia para adicionarDados() do gráfico que queremos alterar, além de enviar o horário em que a requisição foi feita e o valor da cotação do dólar para real.
+
+Portanto, já conseguimos fazer o gráfico dinâmico que atualiza em tempo real na tela, mas ainda temos a parte com os valores específicos da moeda.
+
+Precisaremos converter a quantidade de dólares a seguir.
+
+### Aula 3 - Cotação dinâmica - Vídeo 2
+
+Transcrição
+Já conseguimos fazer nosso gráfico dinâmico e agora iremos para a etapa de seção de valores da moeda de nosso projeto. Primeiro, criaremos uma função para fazer a impressão.
+
+Dentro da pasta "script" no VSCode, criaremos o novo arquivo imprimeCotacao.js. Na primeira linha, selecionaremos uma const lista sendo igual a document. com a referência para a lista.
+
+Abrindo o index.html, teremos a `<div class="investimentos">` que contém a tag `<ul>` da classe "investimentos__lista", que possui data-lista. Essa será nossa referência.
+
+De volta a imprimeCotacao.js, aplicaremos .querySelector() após document, recebendo '[data-lista]'. Em seguida, criaremos a função imprimeCotacao() com nome, valor entre os parênteses.
+
+Abrindo a chaves, adicionaremos lista.innerHTML sendo igual a '' apenas. Abaixo, teremos um for () contendo let multiplicador igual a 1;, seguido de multiplicador <= 1000; e depois com multiplicador *= 10.
+
+Abriremos as chaves novamente e, antes de fazermos o que queremos dentro da repetição, entenderemos o que fizemos até agora: selecionamos a lista e criamos uma função que imprimirá a cotação, a qual receberá o nome da moeda e seu valor atual.
+
+Inicialmente, pegamos a lista e tiramos tudo o que há dentro para evitarmos a impressão da cotação constante e o crescimento exagerado da lista, pois não tem limites.
+
+Depois, aplicamos o for () com a repetição que começa em 1 e, a cada vez que entrar no laço, irá aumentar a multiplicação do valor de antes por dez, até o multiplicador ter um valor igual a mil.
+
+Observando o Figma, os valores da moeda que precisamos é um dólar, dez dólares, cem dólares e mil dólares, que no caso todos seriam multiplicados por dez.
+
+Dentro dessa lógica, já conseguiremos fazer os valores que estão dentro da repetição para os imprimirmos na tela. Para isso, vamos manipular o DOM.
+
+De volta ao código de imprimeCotacao.js, dentro das chaves de for (), inseriremos const listaItem sendo igual a document.createElement() recebendo 'li'.
+
+Na linha seguinte, teremos listaItem.innerHTML sendo igual à crase seguida de ${multiplicador} e ${nome}. Digitaremos dois pontos : e escreveremos R$${}. Dentro das chaves, abriremos () escreveremos valor * multiplicador e, após os parênteses, teremos .toFixed(2). Fecharemos o que for preciso, inclusive a crase.
+
+Na próxima linha, teremos lista.appendChild() recebendo listaItem.
+
+```JavaScript
+const lista = document.querySelector('[data-lista]');
+
+function imprimeCotacao(nome, valor) {
+    lista.innerHTML = '';
+    for (let multiplicador = 1; multiplicador <= 1000; multiplicador *= 10) {
+        const listaItem = document.createElement('li');
+        listaItem.innerHTML = `${multiplicador} ${nome}: R$${(valor * multiplicador).toFixed(2)}`
+        lista.appendChild(listaItem)
+    }
+}
+```
+
+Com isso, criamos um elemento 'li' na variável listaItem e, dentro dele, colocamos uma string de HTML.
+
+Pegamos o multiplicador que seria de um, dez, cem e mil, e depois colocamos o nome da moeda, em que cada vez terá um valor de um dólar, dez dólares, cem dólares e mil dólares, e depois colocamos o valor em si com R$, onde fizemos o cálculo pegando o valor da moeda vezes o multiplicador que escolhemos.
+
+Por exemplo, se o valor for 5.20, faremos vezes dez, cem, mil e assim por diante. Provavelmente teremos um número gigante, e para nos garantirmos, pegaremos apenas os dois números antes da casa decimal. Por isso usamos o .toFixed(2).
+
+Portanto, já conseguiremos incluir o 'li' dentro da lista, que é o que fizemos no final do código pegando o elemento de lista e aplicando appendChild() para inserirmos um "filho", que no caso é o 'li' que inserimos dentro.
+
+Já temos toda a função que fará os dados dinâmicos, mas falta-nos associarmos com script e imprimirmos a cotação junto para mostrarmos na tela de fato, pois observando o projeto em "localhost:5500" no navegador, ainda não estará aparecendo no servidor local.
+
+A seguir, imprimiremos os valores de fato.
+
+### Aula 3 - Manipulando o DOM
+
+Caroline, diretora do ByteBank, solicitou uma seção que mostrasse com quais moedas o banco atuava. Para isso, o time criou uma variável para recolher o elemento de lista e construiu um array com as moedas:
+
+```JavaScript
+const listaMoedas = document.querySelector("[data-lista]");
+const moedas = [ "dolar", "euro", "iene", "won"];
+```
+
+Agora, você tem a tarefa de para cada uma delas criar e inserir um item na lista `<li>` já construída no HTML. Qual trecho de código a seguir conseguiria completar essa missão?
+
+```JavaScript
+moedas.forEach((moeda) => {
+const itemDaLista = document.createElement('li');
+itemDaLista.innerHTML = moeda;
+listaMoedas.appendChild(itemDaLista);
+})
+```
+
+> Nesse contexto, para cada moeda do array moedas você vai criar um item da lista, e dentro do item dessa lista você colocará a string com o nome da moeda. Por fim, vai associar esse item da lista como filho da lista, para conseguir mostrar na tela.
+
+### Aula 3 - Conectando arquivos - Vídeo 3
+
+Transcrição  
+Já fizemos o código de manipulação do DOM e de cálculos que serão impressos em valores da moeda. Nesta aula, conseguiremos unir os dois arquivos para exibirmos na tela de fato.
+
+No imprimeCotacao.js no VSCode, iremos ao final do código e escreveremos export default de imprimeCotacao.
+
+```JavaScript
+const lista = document.querySelector('[data-lista]');
+
+function imprimeCotacao(nome, valor) {
+    lista.innerHTML = '';
+    for (let multiplicador = 1; multiplicador <= 1000; multiplicador *= 10) {
+        const listaItem = document.createElement('li');
+        listaItem.innerHTML = `${multiplicador} ${nome}: R$${(valor * multiplicador).toFixed(2)}`
+        lista.appendChild(listaItem)
+    }
+}
+
+export default imprimeCotacao;
+```
+
+Depois, abriremos scripts.js e, na primeira linha que abriremos antes de const graficoDolar, inseriremos a importação de imprimeCotacao a partir de './imprimeCotacao.js'.
+
+Já dentro de conectaAPI(), abriremos uma nova linha ao final do bloco entre as chaves e escreveremos imprimeCotacao() recebendo "dolar", valor.
+
+```JavaScript
+import imprimeCotacao from "./imprimeCotacao.js";
+const graficoDolar = document.getElementById('graficoDolar');
+
+//código omitido
+
+setInterval(() => conectaAPI(), 5000);
+async function conectaAPI() {
+    const conecta = await fetch("https://economia.awesomeapi.com.br/json/last/USD-BRL");
+    const conectaTraduzido = await conecta.json();
+    let tempo = geraHorario();
+    let valor = conectaTraduzido.USDBRL.ask
+    adicionarDados(graficoParaDolar, tempo, valor);
+    imprimeCotacao("dolar", valor)
+}
+//código omitido
+```
+
+Feito isso, salvaremos e iremos visualizar o resultado disso na tela do navegador aberto no projeto do servidor local.
+
+Aguardaremos os cinco segundos da requisição e exibiremos os cálculos na lista de "Valores da moeda" feitos através do valor retornado da requisição e o multiplicador do laço de repetição.
+
+Portanto, em imprimeCotacao.js, fizemos o export default que exporta a função deste arquivo. Já no scripts.js, a importaremos para a usar e enviar a cotação de "dolar" e o valor em si da cotação.
+
+Temos dois arquivos agora, mas isso não está acontecendo ao mesmo tempo, pois trabalhamos com uma única Thread por padrão em JavaScript.
+
+Thread: em inglês, significa "fio" ou "linha" e, em relação aos processadores, representam uma ordem de execução com instruções que serão desempenhadas uma por vez.
+
+Ou seja, só temos a possibilidade de fazer uma ordem de execução por vez, como se houvesse uma única fila que executa tudo o que há dentro do código, independente de quantos arquivos tenha. Também chamamos isso de processo Single-Thread.
+
+Single-Thread: os processos de encadeamento único contém a execução de instruções em uma única sequência. Em outras palavras, um comando é processado por vez.
+
+Portanto, por padrão, não existem comandos simultâneos.
+
+A seguir, veremos como atuar com mais de uma Thread em outro tipo de processo.
+
+### Aula 3 - Para saber mais: Threads, concorrência e paralelismo
+
+Em todos os sistemas operacionais modernos, todas as unidades de execução fora do kernel (o núcleo do sistema operacional, que é a parte principal de um computador) são organizadas em processos e threads. Os desenvolvedores podem usar processos e threads e a comunicação entre eles para adicionar simultaneidade (concorrência) a um projeto. Em sistemas com vários núcleos de CPU, isso também significa adicionar paralelismo.
+
+![alt text](image-1.png)
+
+Ao executar um programa, como um editor de código, você está iniciando um processo. Com isso o código é carregado em um espaço de memória exclusivo para esse processo, e nenhum outro espaço de memória pode ser endereçado pelo programa sem solicitar ao kernel mais memória ou um espaço de memória diferente. Sem adicionar threads ou processos adicionais, apenas uma instrução é executada por vez, na ordem apropriada conforme prescrito pelo código do programa, e isso é o que chamamos de processo single thread
+
+Concorrência versus Paralelismo  
+“Concurrency is about dealing with lots of things at once. Parallelism is about doing lots of things at once.” - Rob Pyke
+
+Na programação, a concorrência é a composição de processos de execução independente, enquanto o paralelismo é a execução simultânea de computações (possivelmente relacionadas). Simultaneidade é lidar com muitas coisas ao mesmo tempo. Paralelismo é fazer muitas coisas ao mesmo tempo. Isso é a explicação de Rob Pyke na palestra [“Concurrency is not paralelism”](https://www.youtube.com/watch?v=oV9rvDllKEg).
+
+Como comentado na aula anterior: O JavaScript possui um modelo de concorrência baseado em um event loop. Assim, por padrão, podemos notar que o código JavaScript executa scripts independentes, um por vez, demonstrando seu modelo de concorrência. Já, com a possibilidade de adicionar mais de uma thread, esse processo será diferente ao conseguir executar simultaneamente diferentes funções, adaptando-o ao paralelismo.
+
+### Aula 3 - O que aprendemos?
+
+Nessa aula, você aprendeu como:
+
+- Adicionar itens a um array com o método push();
+- Percorrer um array com o método forEach();
+- Atualizar um gráfico da biblioteca Chart.js com o método update();
+- Manipular o DOM com innerHTML, createElement() e appendChild();
+- Exportar e importar arquivos JavaScript.
+
+## Aula 4 - 
+
+### Aula 4 -  - Vídeo 7
