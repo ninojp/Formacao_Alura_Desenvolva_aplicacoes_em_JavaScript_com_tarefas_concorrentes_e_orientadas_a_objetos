@@ -1,8 +1,7 @@
 'use strict';
-import imprimeCotacao from "./imprimeCotacao.js";
+import selecionaCotacao from "./imprimeCotacao.js";
 
 const graficoDolar = document.getElementById('graficoDolar');
-
 const graficoParaDolar = new Chart(graficoDolar, {
     type: 'line',
     data: {
@@ -38,7 +37,7 @@ function gerarHorario() {
     // console.log(horaAtual);
     // console.log(dataAtual);
 };
-gerarHorario();
+// gerarHorario();
 //===============================================================================================================
 
 function adicionarDados(grafico, legenda, dados) {
@@ -54,10 +53,34 @@ function adicionarDados(grafico, legenda, dados) {
 //Assunto novo, sobre como executar duas ou mais tarefas ao mesmo tempo, sem travar o navegador
 let workerDolar = new Worker('./src/workers/workerDolar.js');
 workerDolar.postMessage('usd');
-console.log(workerDolar);
+// console.log(workerDolar);
 workerDolar.addEventListener('message', event => {
     let tempo = gerarHorario();
     let valor = event.data.ask;
-    imprimeCotacao('dolar', valor);
+    selecionaCotacao('dolar', valor);
     adicionarDados(graficoParaDolar, tempo, valor);
+});
+//========================================================================================
+
+const graficoIene = document.getElementById('graficoIene');
+const graficoParaIene = new Chart(graficoIene, {
+    type: 'line',
+    data: {
+        labels: [],
+        datasets: [{
+            label: 'Iene',
+            data: [],
+            borderWidth: 1
+        }]
+    }
+});
+//===============================================================================================================
+
+let workerIene = new Worker('./src/workers/workerIene.js');
+workerIene.postMessage('iene');
+workerIene.addEventListener('message', evento => {
+    let tempo = gerarHorario();
+    let valor = evento.data.ask;
+    adicionarDados(graficoParaIene, tempo, valor);
+    selecionaCotacao('iene', valor);
 });

@@ -1043,3 +1043,393 @@ Nessa aula, você aprendeu como:
 ## Aula 5 - Reforçando o aprendizado
 
 ### Aula 5 - Novos Workers - Vídeo 1
+
+Transcrição  
+Durante essa aula iremos nos desafiar a construir um novo gráfico de variação de moeda, agora para moeda Iene. A primeira coisa que faremos é alterar um pouco o HTML.
+
+Abriremos o arquivo "index.html" e vamos selecionar da linha 33 a 47, que é a criação do article com a classe "dadosDolar". Vamos pressionar "Ctrl + C" para copiar esse trecho e na linha 48, abaixo da tag de fechamento `</article>`, pressionaremos "Ctrl + V" para colar essa tag.
+
+Em seguida, faremos algumas substituições onde tem "dolar" para "iene". Então vamos alterar as linhas 48, 51, 54 e 59, sucessivamente o nome da classe no article e no span e o ID no canvas e na ul.
+
+```JavaScript
+//código omitido
+<article class="dadosIene">
+      <div class="grafico">
+        <div class="grafico__titulo">
+          <span class="grafico__ilustracao-iene"></span>
+          <h2>Variação da moeda desde o login</h2>
+        </div>
+        <canvas id="graficoIene"></canvas>
+      </div>
+      <div class="investimentos">
+        <h2>Valores da moeda</h2>
+        <ul class="investimentos__lista" id="iene" data-lista>
+        </ul>
+      </div>
+    </article>
+```
+
+Já construímos toda seção onde adicionaremos o gráfico e, com isso, conseguimos voltar no site para visualizar o que fizemos. Na metade inferior do servidor local, notamos que a seção está com o fundo branco, os títulos e a imagem da moeda. Agora vamos adicionar o gráfico em si.
+
+Abriremos o arquivo "scripts.js" e no final do arquivo, linha 41, codamos:
+
+```JavaScript
+//código omitido
+
+const graficoIene = document.getElementById('graficoIene');
+const graficoParaIene = new Chart(graficoIene, {
+    type: 'line',
+    data: {
+        labels: [],
+        datasets: [{
+            label: 'Iene',
+            data: [],
+            borderWidth: 1
+        }]
+    }
+})
+```
+
+Salvamos esse código e ao voltamos para o Bytebank, observamos que o gráfico já aparece na seção que criamos. Também podemos perceber que o código que criamos é bem parecido com o utilizado para o gráfico de dólar, a partir da linha 2.
+
+Portanto criamos um canvas que era dele, selecionamos através do const graficoIene e instanciamos o gráfico na variável graficoParaIene, com o nome da moeda, assim como fizemos para o dólar. E dentro da variável do gráfico adicionamos as configurações. Então definimos o tipo do gráfico como linha, que as legendas (labels) começam vazias, assim como os datasets e a descrição do gráfico como "Iene".
+
+Conseguimos instanciar o gráfico. No próximo vídeo praticaremos mais, adicionando os dados dinâmicos dessa nova moeda.
+
+### Aula 5 - Praticando Workers - Vídeo 2
+
+Transcrição  
+Assim como fizemos com o gráfico de dólar, para transformar os dados em dinâmicos precisaremos recuperar os valores da cotação de moedas de um lugar externos. Para isso, criaremos um novo trabalhador.
+
+Com o VS Code aberto, na coluna do Explorador, à esquerda, criaremos um novo arquivo dentro da pasta "workers". Nomearemos esse arquivo como "workerIene.js".
+
+Em seguida, iniciaremos esse trabalhador na última linha do arquivo "scripts.js", ou seja, na linha 53, codando:
+
+```JavaScript
+//código omitido
+let workerIene = new Worker("./script/workers/workerIene.js");
+workerIene.postMessage("iene");
+```
+
+Então instanciamos o trabalhador e enviamos a mensagem "iene" para o arquivo "workerIene.js". Feito isso, abriremos o arquivo do trabalhador para escrevermos o código.
+
+Entretanto, será um pouco diferente do "workerDolar.js" que construímos. Começaremos codando:
+
+```JavaScript
+addEventListener("message", event => {
+    conectaAPI();
+    setInterval(() => conectaAPI(), 5000)
+})
+```
+
+Agora vem a diferença. Anteriormente construímos o ouvir eventos sem existir as funções que chamávamos. Agora iremos construir a função ao final do arquivo, ou seja, a partir da linha 6. Com isso temos:
+
+```JavaScript
+addEventListener("message", event => {
+    conectaAPI();
+    setInterval(() => conectaAPI(), 5000)
+})
+
+async function conectaAPI() {
+    const conecta = await fetch("https://economia.awesomeapi.com.br/last/JPY-BRL");
+    const conectaTraduzido = await conecta.json();
+    postMessage(conectaTraduzido.JPYBRL)
+}
+```
+
+Então fizemos um código semelhante ao do 'workerDolar.js". Portanto construímos uma função que fará a conexão com a API. Ela também tem o fetch, mas a URL é diferente, ao final é JPY-BRL, mostrando que estamos nos referenciando à moeda japonesa.
+
+Em algum "Para Saber Mais" desse projeto, vocês terão acesso a um link onde estarão disponibilizadas para nós as siglas que podemos usar para nos referenciar a diversas moedas. Isso ajudará vocês caso queiram seguir com o desafio de implementar outra moeda sozinhos e sozinhas.
+
+Ainda no código, fizemos a tradução do retorno do fetch com conectaTraduzido e enviamos mensagem para a thread principal, com postMessage(), contendo o valor retornado da requisição. Também fizemos o ouvir eventos que, ao receber a mensagem da thread principal do "scripts.js", pedindo para começarmos a trabalhar, ele iniciará as requisições.
+
+Como o retorno de tudo o que codamos foi uma mensagem para o "scripts.js", voltaremos para esse arquivo onde receberemos essa mensagem e faremos as ações necessárias com essa informação. Então ao final da linha 55 vamos pressionar "Enter" e na linha 56 escreveremos:
+
+```JavaScript
+//código omitido
+workerIene.addEventListener("message", event => {
+    let tempo = geraHorario();
+    let valor = event.data.ask;
+    adicionarDados(graficoParaIene, tempo, valor);
+    selecionaCotacao("iene", valor)
+})
+```
+
+Salvamos essa alteração e voltamos para o Bytebank para verificarmos o resultado. Nele temos agora dois gráficos consultando simultaneamente.
+
+Ao observarmos o código que construímos, notamos que é, basicamente, como fizemos para o "workerDolar". Então aguardamos receber a mensagem do trabalhador e, ao receber, geramos o horário em que a mensagem foi recebida.
+
+Depois pegamos o valor da requisição, que foi enviada na mensagem em questão, usamos a função adicionarDados() para fazer o gráfico e receber os valores novos, e o imprimirCotacao(). Contudo, notamos no Bytebank que o imprimirCotacao() não funcionou.
+
+Isso acontece porque o importarCotacao() entende como se tivesse apenas uma moeda, tanto que no gráfico do dólar, em "Valores da moeda" temos as informações de iene. Então está sendo feita uma substituição ao invés e entender que existe mais de um tipo de lista.
+
+No próximo vídeo resolveremos esse problema.
+
+### Aula 5 - Single Thread e Multithread - Exercício
+
+Após construir o projeto seguindo o modelo single thread e em seguida adaptando-o para o multithread, qual alternativa a seguir descreve melhor o uso desses modelos no JavaScript?
+
+Alternativa correta  
+Como o single thread só pode executar uma função por vez, o processamento de cada uma não pode ser demorado para não bloquear o sistema. Com mais threads você pode executar funções em paralelo sem bloquear a thread principal.
+
+> Isso ai! Com o single thread uma tarefa é lida por vez, e se demorar muito isso interrompe o fluxo do código. Para isso, temos o multi thread onde conseguimos colocar esses processos mais demorados em outra thread, evitando complicações com a thread principal.
+
+### Aula 5 - Multiplas listas - Vídeo 3
+
+Transcrição  
+Após construirmos o segundo gráfico, já esbarramos em um problema: os valores da moeda e o cálculo de cotação não estão funcionando. Ele está sobrescrevendo a lista de valores do dólar, ou seja, não está aceitando que tem duas listas. Para resolvermos esse problema, abriremos o arquivo "imprimeCotacao.js", onde faremos algumas alterações para tornar essa função mais flexível.
+
+Por exemplo, na linha 1, onde criamos a lista, estamos usando o .querySelector(). Mudaremos para .querySelectorAll(). Ao final da linha 1 vamos pressionar "Enter" duas vezes e, na linha 3, criaremos uma função chamada selecionaCotacao() recebendo como parâmetros (nome, valor).
+
+```JavaScript
+const lista = document.querySelectorAll('[data-lista]');
+
+function selecionaCotacao(nome, valor) {
+    lista.forEach((listaEscolhida) => {
+        if (listaEscolhida.id == nome) {
+            imprimeCotacao(listaEscolhida, nome, valor);
+        }
+    })
+}
+
+//código omitido
+```
+
+Feita essa modificação, é importante importarmos essa nova função ao invés da imprimeCotacao. Então mudamos a linha 21 para:
+
+```JavaScript
+export default selecionaCotacao;
+```
+
+Vamos entender as mudanças que fizemos. Primeiramente, usando o querySelectorAll() conseguimos selecionar todas as listas que têm o data-lista, ou seja, tanto a do Iene quanto a do dólar.
+
+Com isso, chamaremos a função selecionaCotacao, com a qual percorreremos a lista enviando uma comparação de qual das listas dentro da lista possuem o ID igual ao nome que será enviado ao chamarmos a função. Quando o ID e o nome da tela forem iguais, a imprimeCotacao é chamada, fazendo a criação dos "li's" da lista em questão, sem sobrescrever uma sobre a outra.
+
+Agora precisamos substituir no "scripts.js" os locais onde usávamos o imprimeCotacao para selecionarCotacao. Essas mudanças ocorrerão nas linhas 1, 37, 59 e 60, sucessivamente na importação, dentro do workerDolar e dentro do addEventListener do workerIene.
+
+```JavaScript
+import selecionaCotacao from "./imprimeCotacao.js";
+const graficoDolar = document.getElementById('graficoDolar');
+
+//código omitido
+
+let workerDolar = new Worker('./script/workers/workerDolar.js');
+workerDolar.postMessage('usd');
+
+workerDolar.addEventListener("message", event => {
+    let tempo = geraHorario();
+    let valor = event.data.ask;
+    selecionaCotacao("dolar", valor);
+    adicionarDados(graficoParaDolar, tempo, valor);
+})
+
+//código omitido
+
+let workerIene = new Worker("./script/workers/workerIene.js");
+workerIene.postMessage("iene");
+workerIene.addEventListener("message", event => {
+    let tempo = geraHorario();
+    let valor = event.data.ask;
+    adicionarDados(graficoParaIene, tempo, valor);
+    selecionaCotacao("iene", valor)
+})
+```
+
+Após salvarmos esse código, precisamos fazer uma última alteração no arquivo "imprimeCotacao.js". Quando chamamos o selecionaCotacao dentro do imprimeCotacao, estamos enviando a listaEscolhida, porém ao declararmos a imprimeCotacao, esse parâmetro não está sendo esperado. Então precisamos adicioná-lo na linha 11.
+
+```JavaScript
+function imprimeCotacao(lista, nome, valor) {
+    lista.innerHTML = '';
+    for (let multiplicador = 1; multiplicador <= 1000; multiplicador *= 10) {
+        const listaItem = document.createElement('li');
+        listaItem.innerHTML = `${multiplicador} ${nome}: R$${(valor * multiplicador).toFixed(2)}`
+        lista.appendChild(listaItem)
+    }
+}
+```
+
+Após essas mudanças, ao abrirmos o Bytebank novamente, no servidor local, reparamos que tanto o gráfico do dólar quanto no gráfico do Iene temos os "Valores da moeda" sendo atualizados. Sendo assim podemos voltar ao código no VS Code para entendermos o que fizemos.
+
+A função imprimeCotacao não é mais exportada, por isso não podemos mais importá-la no "scripts.js". Por isso em todos os locais que ela era chamada, precisamos substitui-la pela selecionaCotacao.
+
+Nosso código está quase perfeito, e com isso conseguimos resolver mais um problema no servidor local, que está me irritando. Nós não estamos respeitando o plural. Estamos usando "1 dólar" e "10 dólar", ao invés de "10 dólares".
+
+Para resolvermos isso, voltaremos no arquivo "imprimeCotacao.js" e, dentro da função imprimeCotacao(), após a lista.innerHTML criaremos a const plurais com os plurais de "dólar" e "iene. Depois, para validar, em listaInnerHTML da linha 19 e vamos alterar o ${nome} para ${multiplicador == 1 ? nome : plurais[nome]}.
+
+```JavaScript
+function imprimeCotacao(lista, nome, valor) {
+    lista.innerHTML = '';
+    const plurais = {
+        "dolar": "dolares",
+        "iene": "ienes"
+    }
+    for (let multiplicador = 1; multiplicador <= 1000; multiplicador *= 10) {
+        const listaItem = document.createElement('li');
+        listaItem.innerHTML = `${multiplicador} ${multiplicador == 1 ? nome : plurais[nome]}: R$${(valor * multiplicador).toFixed(2)}`
+        lista.appendChild(listaItem)
+    }
+}
+```
+
+Agora ao voltarmos para o servidor local percebemos que temos o uso dos plurais para os valores maiores que 1. Portanto nós criamos a variável plurais com os nomes tanto no singular quanto no plural. Em seguida fizemos uma validação onde, se o multiplicador for igual a 1, o nome é impresso normalmente, senão ele acessa a lista de plurais qual o plural condizente com o nome impresso.
+
+Agora nosso projeto está bem bonito. Falta apenas criarmos uma URL para sairmos do servidor local e podermos compartilhar com todo mundo. Faremos isso no próximo vídeo.
+
+### Aula 5 - Desafio: nova moeda
+
+Agora que você criou uma nova moeda e adaptou seu código para receber mais de uma informação, que tal escolher uma moeda nova e criar mais uma seção de cotação de moeda?
+
+Sinta-se livre para escolher qual você preferir. Caso precise de ajuda, você encontrará como eu fiz ao clicar no botão “Ver opinião do instrutor”.
+
+Para verificar os nomes e as siglas das moedas disponíveis na API de cotação de moeda você pode [acessar esse link](https://economia.awesomeapi.com.br/xml/available/uniq).
+
+Lembre-se: treinar é uma das melhores maneiras de fixar o conteúdo aprendido durante os cursos.
+
+Opinião do instrutor
+
+Para a construção do meu novo gráfico, escolherei a moeda Won sul-coreano. Primeiramente, devemos construir os elementos HTML para a base do nosso gráfico no arquivo index.html:
+
+```html
+<article class="dadosIene">
+      <div class="grafico">
+        <div class="grafico__titulo">
+          <span class="grafico__ilustracao-iene"></span>
+          <h2>Variação da moeda desde o login</h2>
+        </div>
+        <canvas id="graficoWon"></canvas>
+      </div>
+
+      <div class="investimentos">
+        <h2>Valores da moeda</h2>
+        <ul class="investimentos__lista" id="won" data-lista>
+        </ul>
+</article>
+```
+
+Observe que mantive a classe grafico__ilustracao-iene no elemento span pois não possuo uma ilustração para essa nova moeda. Você pode procurar em sites de ilustrações gratuitas ou criar a sua para substituir.
+
+Após isso, você vai selecionar este canvas no arquivo script.js:
+
+```JavaScript
+const graficoWon = document.getElementById('graficoWon');
+```
+
+E através disso, instanciar um novo gráfico através da biblioteca Chart.js:
+
+```JavaScript
+const graficoParaWon = new Chart(graficoWon, {
+    type: 'line',
+    data: {
+        labels: [],
+        datasets: [{
+            label: 'Iene',
+            data: [],
+            fill: false,
+            borderColor: 'rgb(75, 100, 192)',
+            tension: 0.1
+        }]
+    }
+});
+```
+
+Lembre-se de alterar os valores de borderColor no seu projeto para um gráfico com cor diferente.
+
+Em seguida, para transformar esse gráfico em dinâmico e conseguir alimenta-lo com dados, vamos criar o arquivo workerWon.js e iniciar dentro do script.js um novo worker para aquele novo arquivo.
+
+```JavaScript
+workerWon = new Worker("./scripts/workers/workerWon.js");
+workerWon.postMessage('won');
+```
+
+E dentro do arquivo workerWon.js você colocará o código que será executado naquele worker:
+
+```JavaScript
+addEventListener("message", event => {
+    // extract person passed from main thread from event object
+    let moeda = event.data
+    conectaAPI(moeda);
+    setInterval(() => conectaAPI(moeda), 5000);
+})
+
+async function conectaAPI(moeda) {
+    const conecta = await fetch("https://economia.awesomeapi.com.br/last/KRW-BRL");
+    const conectaTraduzido = await conecta.json();
+
+    postMessage(conectaTraduzido.JPYBRL)
+}
+```
+
+Aqui, esse worker esperará receber a mensagem com o nome da moeda para conectar com a url da API referente a conversão da moeda escolhida para o real. Depois, retornará o valor para a thread principal localizada no script.js
+
+Por fim, ao receber o valor da cotação, é necessário adicionar os dados no gráfico e na seção de valores da moeda. Para isso, no arquivo script.js você vai fazer:
+
+```JavaScript
+workerWon.addEventListener("message", event => {
+    let tempo = geraHorario();
+    valor = event.data.ask;
+    adicionarData(graficoParaIene, tempo, valor);
+    imprimirCotacao("iene", valor);
+})
+```
+
+Esse código fará a detecção do recebimento da mensagem do worker relacionado a moeda won, gerará o horário que essa mensagem foi recebida e vai adicionar a data no gráfico e vai imprimir os valores da moeda.
+
+Todos os passos para inserir uma nova moeda foram feitos durante os vídeos dessa aula, caso tenha alguma dificuldade não deixe de assistir novamente os vídeos para entender melhor cada trecho de código. Além disso, você pode contar com os seus colegas que também fizeram o curso através do discord.
+
+Conseguiu resolver? Que tal dar uma olhada no fórum ou no discord e ajudar quem possa estar com dúvidas? Ensinar é a melhor maneira de aprender!
+
+### Aula 5 - Deploy - Vídeo 4
+
+Transcrição  
+Melhor do que fazer esse projeto lindo é compartilhá-lo com todo mundo que gostamos, assim como nas nossas redes sociais. Uma maneira de conseguirmos a URL para compartilharmos esse projeto com todo mundo é através do GitHub.
+
+O primeiro passo é criarmos um repositório com todo o projeto. Com o link do repositório aberto, no lado superior esquerdo terá o "nomeDaConta/nomeDoRepositorio" do GitHub. Abaixo dele, e acima dos arquivos do repositório, há um menu horizontal onde, ao final dele, temos a opção "Settings (Configurações)".
+
+Clicando nele, a página atualiza. Nela temos um menu à esquerda com algumas seções. A segunda seção é a "Code and automation (Código e automação)". A última opção dessa seção, e a décima opção da lista em geral, é a "pages (páginas)".
+
+Após clicarmos nessa opção, no lado direito da tela temos a explicação do que é o "GitHub Pages" e para que ele foi desenhado, no caso, para hospedar projetos pessoais dos repositórios GitHub. Em seguida, há um pequeno formulário.
+
+Uma das opções do formulário é a "Branches", onde precisamos escolher em qual branch será feito o deploy do projeto. Vocês podem escolher a branch "main", mas eu terei que escolher a "aula05", porque eu separei o código por aulas. Escolhida a branch, basta clicarmos em "Save (Salvar)".
+
+Esse processo demora um pouco, mas ao clicarmos para salvar, somos informados que a página já está sendo construída. Quando o deploy termina, e após atualizar a página algumas vezes durante a espera, aparece uma mensagem acima do formulário: "Your site live at (Seu site está em)" com o link onde o site do projeto pode ser acessado.
+
+No meu caso, o link é http://monicahillman.github.io/bytebank/. Quando abrimos esse link, em outra aba aparece o site do nosso projeto, que está funcionando da mesma forma que estava no servidor local.
+
+Isso que acabamos de fazer se chama deploy, como eu já havia comentado. Esse termo da língua inglesa significa implantar. É a ação de quando já temos todo projeto pronto e resolvemos publicá-lo.
+
+O GitHub facilita isso para nós, permitindo que façamos tudo isso clicando em um botão, sem precisarmos de conhecimento sobre como publicar a aplicação com o AWS, entre outros. São coisas que não precisamos saber no momento, mas vou deixar como recomendação dos próximos passos para aprenderem mais sobre Front-end ou GitHub.
+
+Esse vídeo, em específico, foi um extra para fazer vocês compartilharem com todo mundo o projeto de vocês, que é uma parte muito legal de todo treinamento da Alura.
+
+### Aula 5 - Projeto final do curso
+
+Caso queira revisar o código até aqui, disponibilizamos o código final do curso [nesse link](https://github.com/alura-cursos/bytebank-javascript/archive/refs/heads/aula05.zip) ou veja nosso [repositório do Github](https://github.com/alura-cursos/bytebank-javascript/tree/aula05).
+
+### Aula 5 - Compartilhando o aprendizado
+
+Parabéns pela conclusão do projeto, estudante! Se você chegou até aqui, espero que tenha seu projeto pronto (e se precisar de alguma ajuda, não deixe de abrir um tópico no fórum ou mandar mensagem no discord da Alura) e tenha adquirido muitos conhecimentos novos.
+
+Agora para hospedar o projeto desenvolvido, compartilho o artigo [“Como colocar seu projeto no ar com o Github Pages?”](https://www.alura.com.br/artigos/como-colocar-projeto-no-ar-com-github-pages) do instrutor Neilton Seguins.
+
+Que tal compartilhar seu certificado, seu aprendizado até aqui ou até seu projeto comigo? Para isso, você pode:
+
+- Marcar a Alura nas redes sociais. Você pode encontrar os nossos perfis por aqui;
+- Me marcar através das minhas redes sociais, que podem ser visualizadas por aqui;
+- Enviar mensagem no Discord de alunos da Alura.
+
+### Aula 5 - Conclusão - Vídeo 5
+
+Transcrição  
+Parabéns por concluírem esse projeto e muito obrigada pela parceria.
+
+Durante o projeto, fizemos uma aplicação que faz requisições a cada cinco segundos. Para isso, trabalhamos com Multithreads através de Webworkers, que podem nos auxiliar a criar threads além da principal, que normalmente é o código que construímos em Javascript. Também precisamos repassar por vários conhecimentos que aprendemos sobre Javascript em outros cursos da plataforma.
+
+O resultado final foi uma aplicação muito legal, que é a tela de cotação de moedas. Nela fizemos o gráfico tanto do dólar, quanto do iene, que mostra a variação dessas moedas, quando elas aumentam ou abaixam. E para facilitar a vida da pessoa usuária, ela faz a conversão do valor da moeda quando está com 1, 10, 100 ou 1000 dólares ou ienes para o real, sem precisarmos fazer o cálculo manualmente.
+
+Tendo feito esse projeto bem bacana, não esqueçam de colocá-lo no seu GitHub e compartilhar nas redes sociais. Também se lembrem de fazer todas as atividades para melhorar ainda mais o aprendizado de vocês.
+
+Ao final desse curso terá uma avaliação de 1 a 10 e um espaço para vocês escreverem suas opiniões sobre o curso. Não esqueçam de preencher porque ele nos auxilia a saber o que precisamos melhorar e onde estamos acertando.
+
+Novamente, obrigada por chegar até aqui.
+
+Parabéns e nos vemos em breve!

@@ -29,7 +29,6 @@
     <header class="cabecalho">
       <h2>Olá, Moni! Estes são os detalhes da sua cotação:</h2>
     </header>
-
     <article class="dadosDolar">
       <div class="grafico">
         <div class="grafico__titulo">
@@ -38,10 +37,23 @@
         </div>
         <canvas id="graficoDolar"></canvas>
       </div>
-
       <div class="investimentos">
         <h2>Valores da moeda</h2>
         <ul class="investimentos__lista" id="dolar" data-lista>
+        </ul>
+      </div>
+    </article>
+    <article class="dadosIene">
+      <div class="grafico">
+        <div class="grafico__titulo">
+          <span class="grafico__ilustracao-iene"></span>
+          <h2>Variação da moeda desde o login</h2>
+        </div>
+        <canvas id="graficoIene"></canvas>
+      </div>
+      <div class="investimentos">
+        <h2>Valores da moeda</h2>
+        <ul class="investimentos__lista" id="iene" data-lista>
         </ul>
       </div>
     </article>
@@ -52,7 +64,5 @@
   </main>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script type="module" src="./src/scripts.js"></script>
-  <!-- <script type="module" src="./src/ConectaAPI.js"></script> -->
 </body>
-
 </html>
