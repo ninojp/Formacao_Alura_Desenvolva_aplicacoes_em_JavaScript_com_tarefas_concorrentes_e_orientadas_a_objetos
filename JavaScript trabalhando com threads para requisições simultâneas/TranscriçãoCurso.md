@@ -826,6 +826,220 @@ Nessa aula, você aprendeu como:
 - Manipular o DOM com innerHTML, createElement() e appendChild();
 - Exportar e importar arquivos JavaScript.
 
-## Aula 4 - 
+## Aula 4 - Trabalhando com MultiThread
 
-### Aula 4 -  - Vídeo 7
+### Aula 4 - Projeto da aula anterior
+
+Caso queira revisar o código até aqui ou começar a partir desse ponto, disponibilizamos os códigos realizados na aula anterior para [baixar nesse link](https://github.com/alura-cursos/bytebank-javascript/archive/refs/heads/aula03.zip) ou veja nosso [repositório do Github](https://github.com/alura-cursos/bytebank-javascript/tree/aula03).
+
+### Aula 4 - Web Workers - Vídeo 1
+
+Transcrição  
+Anteriormente, demos ênfase em como o Javascript trabalha com uma única thread por padrão. Contudo, é possível criar mais de uma.
+
+Voltando ao VS Code, acessaremos o explorador, onde selecionaremos a pasta "script", na qual criaremos com o botão direito uma nova pasta chamada "workers". Dentro dela, criaremos um arquivo chamado workerDolar.js.
+
+Acessaremos o interior de script.js. Abaixo das chaves de function adicionarDados, criaremos um worker escrevendo let workerDolar = new Worker com W maiúsculo, seguido de parênteses. Entre estes, adicionaremos o local ./script/workers/workerDolar.js envolto em aspas simples .
+
+```JavaScript
+function adicionarDados(grafico, legenda, dados) {
+
+// Código omitido
+
+}
+
+let workerDolar = new Worker('./script/workers/workerDolar.js');
+```
+
+Neste comando, utilizamos o diretório desde a página inicial, por exigência do Worker.
+
+Entendendo o Worker  
+Os Web Workers servem para executar scripts e threads em segundo plano, através de conteúdos da web. É possível criar vários workers (trabalhadores, em português). Eles realizam partes do processo em segundo plano, simultaneamente em relação à nossa thread principal, aliviando o peso do processo.
+
+Depois de criados, os trabalhadores se comunicam entre threads, enviam e recebem mensagens. Desta forma, conseguimos unir o processo, enviar valores para outros locais, e também realizar requisições para a thread principal afim de manipular o DOM.
+
+Podemos realizar muitas tarefas com os workers. Faremos algumas delas em nossa tela de cotação de moedas.
+
+Enviando as mensagens  
+No arquivo script.js, abaixo da criação do worker, escreveremos workerDolar.postMessage('usd'). Neste comando, selecionamos o worker e enviamos a ele uma mensagem com o valor de usd, ou seja, o valor do dólar. Desta forma, especificamos que queremos trabalhar com esta moeda.
+
+Podemos chamar essa etapa de processo multithread.
+
+Multithreads  
+Processos multithread são o oposto dos processos de thread única. Eles permitem a execução de várias partes de um programa ao mesmo tempo, separando-o em pequenos pedaços.
+
+Essa abordagem diminui a chance de travamento do navegador devido a problemas como demora de requisições ou erros no laço de repetição. Nestas situações não travaremos a thread principal, o que melhorará a nossa performance.
+
+A seguir, abordaremos algumas possibilidades dos workers em um projeto Javascript. Vamos receber a mensagem enviada e continuar elaborando o projeto. Até lá!
+
+### Aula 4 - Comunicação entre Threads - Vídeo 2
+
+Transcrição  
+Agora que possuímos outras threads e trabalhadores, podemos dividir as tarefas. Começaremos pela conexão com a API.
+
+Voltaremos ao VS Code, onde acessaremos o interior do arquivo workerDolar.js por meio do caminho "script > workers".
+
+Neste arquivo criaremos a função async function conectaAPI() seguida de um bloco de chaves, dentro do qual adicionaremos a variável const conecta que receberá um await fetch(''). Entre as aspas simples e os parênteses, adicionaremos o endereço https://economia.awesomeapi.com.br/last/USD-BRL.
+
+Abaixo dessa variável, criaremos outra do tipo const, denominada conectaTraduzido, que receberá um await conecta.json().
+
+Abaixo dessa variável, por sua vez, enviaremos uma mensagem por meio de um postMessage(). Entre os seus parênteses, enviaremos um conectaTraduzido.USDBRL.
+
+```JavaScript
+async function conectaAPI() {
+    const conecta = await fetch('https://economia.awesomeapi.com.br/last/USD-BRL');
+    const conectaTraduzido = await conecta.json();
+    postMessage(conectaTraduzido.USDBRL);
+}
+```
+
+Voltaremos ao arquivo script.js e apagaremos a função conectaAPI, localizada acima de geraHorario().
+
+```JavaScript
+async function conectaAPI() {
+    const conecta = await fetch("https://economia.awesomeapi.com.br/json/last/USD-BRL");
+    const conectaTraduzido = await conecta.json();
+    let tempo = geraHorario();
+    let valor = conectaTraduzido.USDBRL.ask
+    adicionarDados(graficoParaDolar, tempo, valor);
+    imprimeCotacao("dolar", valor)
+}
+function geraHorario() {
+// Código omitido
+}
+```
+
+Desta forma, transferimos para o workerDolar a responsabilidade de realizar a conexão com a API. Mantivemos o mesmo processo: um fetch() será realizado em uma função assíncrona para esperar o resultado, e através do postMessage() é enviada uma mensagem para a thread principal com o resultado da conexão com a API.
+
+Contudo, para a conectaAPI() funcionar, precisamos chamá-la através de um evento.
+
+Retornaremos ao VS Code e acessaremos novamente o interior do arquivo workerDolar.js. Abaixo das chaves da função conectaAPI criaremos um addEventListener(). Entre os seus parênteses, adicionaremos uma "message" e uma vírgula, seguida da função () => e de um bloco de chaves.
+
+Entre as chaves adicionaremos, em duas linhas diferentes, um conectaAPI() e um setInterval(). Este último receberá entre parênteses a função () => conectaAPI() seguida do valor 5000, ambos separados por uma vírgula.
+
+```JavaScript
+async function conectaAPI() {
+
+// Código omitido
+
+}
+
+addEventListener("message", () => {
+    conectaAPI();
+    setInterval(() => conectaAPI(), 5000);
+})
+```
+
+Salvaremos o código.
+
+Vamos entendê-lo? Quando a mensagem do script workerDolar.postMessage() for enviada e o eventListener recebê-la, faremos a conexão com a API para mostrar os dados e entraremos no intervalo de tempo setInterval() para repetir a chamada da API a cada 5 segundos.
+
+Podemos acessar o arquivo script.js e remover o comando setInterval() localizado acima de geraHorario().
+
+```JavaScript
+setInterval(() => conectaAPI(), 5000);
+
+function geraHorario() {
+
+// Código omitido
+
+}
+```
+
+Por enquanto não será possível ver o resultado das nossas mudanças, pois ainda não estamos recebendo a mensagem na thread principal para mudar os valores na tela. Contudo, é importante entender que estamos trabalhando com o conceito de Paralelismo.
+
+Concorrência versus Paralelismos  
+O Paralelismo se configura como o contrário do modelo de Concorrência que vimos até agora. Neste último, ocorre uma ação por vez, em uma ordem que não foi pré-definida. Já no modelo novo, é possível inserir tarefas que acontecem simultaneamente, ou seja, em paralelo.
+
+Diagrama sobre fundo branco. No topo, o título principal na cor azul: Concorrência versus Paralelismos. Abaixo dele, três retângulos na vertical, lado a lado, e acima de cada um deles, três títulos em negrito, na cor preta. À esquerda, o retângulo que representa o modelo de Concorrência, constituído de quatro retângulos menores, de alturas diferentes, que alternam entre as cores azul claro e azul escuro. Acima, o título CPU. No centro e à esquerda, respectivamente, dois retângulos que representam o modelo de Paralelismo. O central está inteiramente na cor azul claro. Acima, o título CPU1. O direito está inteiramente em azul escuro. Acima, o título CPU2.
+
+Além do conceito de multithread, temos este novo conceito no desenvolvimento do nosso código.
+
+A seguir, aprenderemos a realizar o recebimento da mensagem com o valor da conexão da API, para dessa forma imprimir na tela de maneira a associar os dois trabalhadores. Até logo!
+
+### Aula 4 - Mensagens - Exercício
+
+Quando se trata de web workers, qual o método para enviar mensagens e qual a estratégia que usamos para recebê-las, respectivamente?
+
+Resposta:
+postMessage e addEventListener
+
+> Com o método postMessage conseguimos enviar mensagens entre threads e com o addEventListener conseguimos detectar esse envio de mensagem, agindo como se recebesse ela.
+
+### Aula 4 - Trocando mensagens - Vídeo 3
+
+Transcrição  
+Anteriormente, demos mais trabalho para o nosso trabalhador. Como receberemos o fruto do seu trabalho para uni-lo ao nosso produto final dentro do script.js?
+
+Voltaremos ao VS Code, onde abriremos este arquivo. Abaixo de workerDolar.postMessage adicionaremos um workerDolar.addEventListener(). Dentro dos parênteses adicionaremos message entre aspas duplas, seguido de uma vírgula e um event => {}.
+
+Dentro deste bloco de chaves adicionaremos os quatro comandos abaixo, um em cada linha:
+
+- let tempo = geraHorario();
+- let valor = event.data.ask;
+- imprimeCotacao(), que receberá entre os parênteses um dolar entre aspas duplas e um valor, ambos separados por vírgula;
+- adicionarDados() que receberá entre os parênteses graficoParaDolar, tempo e valor, separados por vírgula.
+- workerDolar.postMessage('usd');
+
+```JavaScript
+workerDolar.addEventListener("message", event => {
+    let tempo = geraHorario();
+    let valor = event.data.ask;
+    imprimeCotacao("dolar", valor);
+    adicionarDados(graficoParaDolar, tempo, valor);
+})
+```
+
+Salvaremos este código e iremos para o navegador, onde abriremos o ByteBank no servidor local e visualizaremos o resultado: temos as nossas requisições específicas acontecendo e o nosso gráfico que atualiza em tempo real, assim como antes de criarmos os workers.
+
+Vamos entender o código? Selecionamos o workerDolar e adicionamos um addEventListener específico para ele.
+
+Podemos considerar o addEventListener um fofoqueiro que gosta de ouvir o que os outros estão fazendo!
+
+Ele esperou o workerDolar enviar uma mensagem, e a cada mensagem recebida ele recolhe os seus valores através do event e realiza as tarefas que adicionamos entre as chaves:
+
+- exibir o horário na variável tempo;
+- exibir o valor da cotação daquela moeda naquele horário na variável valor através do event.data.ask, onde ele recebe a mensagem enviada e recolhe o valor da venda por meio do .ask enviado pela API;
+- chamar a função imprimeCotacao() para imprimir os valores da moeda e adicionar os dados no gráfico.
+- O processo que realizamos acima é bem semelhante ao que fizemos antes, contudo, agora a conexão da API é feita por um trabalhador em segundo plano. Isso evita que o navegador trave em momentos de erro ou demora nas requisições.
+
+Vamos nos desafiar ainda mais com a implementação dos workers criando uma nova moeda e realizando as alterações necessárias para construir um novo gráfico e mostrá-lo na tela.
+
+Se acessarmos o Figma do projeto, veremos que a segunda moeda sugerida é o Iene, a moeda japonesa. A seguir, vamos implementá-la. Até lá!
+
+### Aula 4 - Para saber mais: Multithread
+
+JavaScript era uma linguagem em que os únicos mecanismos multitarefa disponíveis eram dividir tarefas e agendar suas partes para execução posterior e, no caso do Node.js, executar processos adicionais.
+
+Agora, imagine uma situação em que temos um algoritmo complexo sendo executado no navegador. Enquanto a call stack tem funções para executar, o navegador não pode fazer mais nada. Isso significa que o navegador não pode renderizar nem executar outro código.
+
+Depois que o navegador iniciar o processamento de muitas tarefas na call stack, pode acontecer de deixar de responder. Assim, alguns navegadores param de funcionar. Isso é o caso de um sistema single thread, que só pode tratar de uma requisição por vez. Por isso, o processamento não pode ser demorado para não bloquear o funcionamento da aplicação.
+
+Hoje, em todos os principais ambientes JavaScript, temos acesso a threads e, diferentemente de Ruby e Python, não temos um GIL, tornando-os efetivamente inúteis para executar tarefas com uso intensivo de CPU. *Ainda assim, as threads são úteis para para isolar tarefas com uso intensivo de CPU**. No navegador, também existem threads de propósito especial que possuem conjuntos de recursos disponíveis para eles que são diferentes do thread principal.
+
+Para gerar novas threads com o Javascript e manipular mensagens entre elas, você pode usar o seguinte trecho de código:
+
+```JavaScript
+const worker = new Worker(‘worker.js’);
+worker.postMessage(‘Olá, mundo!’);
+```
+
+Com o auxílio de ```JavaScript construímos um sistema multithread em que podemos tratar vários processos em paralelo, mesmo que demorem ou bloqueiem, sem afetar a thread principal.
+
+Um conteúdo complementar interessante para entender melhor sobre multithreads com JavaScript é o livro “Multithreaded Javascript: Concurrency Beyond The Event Loop” de Thomas Hunter II e Bryan English.
+
+GIL significa Global Interpreter Lock (em português, bloqueio de intérprete global) e é um bloqueio de intérprete global é um mecanismo usado em intérpretes de linguagem de computador para sincronizar a execução de threads para que apenas um thread nativo possa ser executado por vez.
+
+### Aula 4 - O que aprendemos?
+
+Nessa aula, você aprendeu como:
+
+- Criar novas threads;
+- Definir web workers;
+- Enviar mensagem entre threads com postMessage();
+- Detectar o envio de mensagens com o addEventListener();
+- Identificar o que é o modelo de paralelismo e as diferenças entre single thread e multithread.
+
+## Aula 5 - Reforçando o aprendizado
+
+### Aula 5 - Novos Workers - Vídeo 1
